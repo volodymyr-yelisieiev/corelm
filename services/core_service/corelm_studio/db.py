@@ -147,6 +147,24 @@ class StudioDB:
                     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
                 );
 
+                CREATE TABLE IF NOT EXISTS workflow_runs (
+                    id TEXT PRIMARY KEY,
+                    workflow_id TEXT NOT NULL,
+                    session_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    trace_json TEXT NOT NULL,
+                    outputs_json TEXT NOT NULL,
+                    final_output TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS settings (
+                    key TEXT PRIMARY KEY,
+                    value_json TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+
                 CREATE TABLE IF NOT EXISTS secrets_metadata (
                     id TEXT PRIMARY KEY,
                     connector_id TEXT NOT NULL,
@@ -352,3 +370,92 @@ class StudioDB:
         self.execute("DELETE FROM secrets_metadata WHERE connector_id = ?", (connector_id,))
         self.execute("DELETE FROM connectors WHERE id = ?", (connector_id,))
         return True
+
+    def list_replay_snapshots(self, session_id: str, limit: int = 50) -> list[dict[str, Any]]:
+        rows = self.query_all(
+            "SELECT * FROM replay_snapshots WHERE session_id = ? ORDER BY created_at DESC LIMIT ?",
+            (session_id, limit),
+        )
+        output = []
+        for row in reversed(rows):
+            payload = dict(row)
+            payload["ok"] = bool(row["ok"])
+            payload["snapshot"] = loads_json(row["snapshot_json"], {})
+            output.append(payload)
+        return output
+
+    def get_ledger_entry(self, session_id: str, entry_id: str) -> dict[str, Any] | None:
+        row = self.query_one(
+            "SELECT * FROM ledger_entries WHERE session_id = ? AND entry_id = ?",
+            (session_id, entry_id),
+        )
+        if not row:
+            return None
+        payload = dict(row)
+        payload["corelm"] = loads_json(row["corelm_json"], {})
+        payload["metadata"] = loads_json(row["metadata_json"], {})
+        return payload
+
+    def record_workflow_run(
+        self,
+        workflow_id: str,
+        session_id: str,
+        status: str,
+        trace: list[dict[str, Any]],
+        outputs: dict[str, Any],
+        final_output: str,
+    ) -> dict[str, Any]:
+        now = utc_now()
+        run_id = f"run-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+        self.execute(
+            """
+            INSERT INTO workflow_runs
+            (id, workflow_id, session_id, status, trace_json, outputs_json, final_output, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                run_id,
+                workflow_id,
+                session_id,
+                status,
+                dumps_json(sanitize_obj(trace)),
+                dumps_json(sanitize_obj(outputs)),
+                sanitize_obj(final_output),
+                now,
+            ),
+        )
+        return self.get_workflow_run(run_id) or {}
+
+    def get_workflow_run(self, run_id: str) -> dict[str, Any] | None:
+        row = self.query_one("SELECT * FROM workflow_runs WHERE id = ?", (run_id,))
+        if not row:
+            return None
+        payload = dict(row)
+        payload["trace"] = loads_json(row["trace_json"], [])
+        payload["outputs"] = loads_json(row["outputs_json"], {})
+        return payload
+
+    def list_workflow_runs(self, session_id: str = "default", limit: int = 50) -> list[dict[str, Any]]:
+        rows = self.query_all(
+            "SELECT id FROM workflow_runs WHERE session_id = ? ORDER BY created_at DESC LIMIT ?",
+            (session_id, limit),
+        )
+        runs = [run for row in rows if (run := self.get_workflow_run(row["id"]))]
+        return list(reversed(runs))
+
+    def get_settings(self) -> dict[str, Any]:
+        rows = self.query_all("SELECT key, value_json FROM settings ORDER BY key")
+        return {row["key"]: loads_json(row["value_json"], None) for row in rows}
+
+    def update_settings(self, patch: dict[str, Any]) -> dict[str, Any]:
+        now = utc_now()
+        for key, value in sanitize_obj(patch).items():
+            self.execute(
+                """
+                INSERT INTO settings (key, value_json, updated_at)
+                VALUES (?, ?, ?)
+                ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = excluded.updated_at
+                """,
+                (str(key), dumps_json(value), now),
+            )
+        return self.get_settings()

@@ -11,6 +11,8 @@ Core LM full-spectrum research kit. It combines:
 - an n8n-like Flow Studio for node-based ingestion, compression, Core LM
   execution, chat output, and outbound routing;
 - deterministic mocks for external LLM/local model/REST integrations.
+- sample workflows, connector configs, and programming-agent packets that can
+  run offline through the canonical sidecar.
 
 Core LM remains the canonical state authority. External systems are perturbation
 sources or outbound targets, and the global chat is an interaction bus rather
@@ -38,6 +40,7 @@ Useful development commands:
 PYTHONPATH=. python -m services.core_service.corelm_studio
 npm run desktop:test
 npm run desktop:build
+npm run desktop:package:win
 PYTHONPATH=. python -m pytest -q
 ```
 

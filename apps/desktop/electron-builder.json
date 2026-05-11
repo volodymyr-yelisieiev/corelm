@@ -21,12 +21,37 @@
       "filter": ["**/*", "!**/__pycache__/**", "!**/*.pyc"]
     },
     {
+      "from": "runtime/python-win",
+      "to": "corelm_service/python",
+      "filter": ["**/*"]
+    },
+    {
       "from": "requirements.txt",
       "to": "corelm_service/requirements.txt"
     },
     {
       "from": "pyproject.toml",
       "to": "corelm_service/pyproject.toml"
+    },
+    {
+      "from": "sample_workflows",
+      "to": "corelm_service/sample_workflows"
+    },
+    {
+      "from": "sample_connectors",
+      "to": "corelm_service/sample_connectors"
+    },
+    {
+      "from": "prompt_templates",
+      "to": "corelm_service/prompt_templates"
+    },
+    {
+      "from": "examples/outbound_packets",
+      "to": "corelm_service/examples/outbound_packets"
+    },
+    {
+      "from": "examples/demo_session.json",
+      "to": "corelm_service/examples/demo_session.json"
     }
   ],
   "extraMetadata": {

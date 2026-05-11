@@ -29,3 +29,7 @@ adapter.
 
 Connectors never mutate canonical state directly. Durable state changes go
 through Core LM ingestion and invariant checks.
+
+The desktop consumes the sidecar API for connector execution, workflow runs,
+settings, replay snapshots, ledger details, and outbound receipts. UI state is a
+view over sidecar-owned SQLite records; it is not a second truth store.

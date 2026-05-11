@@ -45,3 +45,12 @@ npm run desktop:test
 3. Press `Core LM`.
 4. Inspect the chat message, ledger entry, metrics, provenance, and replay state.
 5. Press `Route` to prepare a programming-agent handoff packet.
+
+## Connector Demo
+
+1. Open the Connectors drawer.
+2. Choose `OpenAI-compatible` or `Ollama/local`.
+3. Keep `mock` mode enabled through the default payload.
+4. Press `Run through Core`.
+5. Inspect the resulting Core LM chat message, ledger entry, replay snapshot,
+   and route receipt.

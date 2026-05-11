@@ -31,7 +31,19 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
-import type { ChatMessage, LedgerMirror, MetricRecord, SessionRecord, StudioState, Workflow, WorkflowNode, WorkflowRunResult } from "./types";
+import type {
+  ChatMessage,
+  ConnectorRecord,
+  LedgerMirror,
+  MetricRecord,
+  ReplaySnapshot,
+  SessionRecord,
+  StudioState,
+  Workflow,
+  WorkflowNode,
+  WorkflowRunRecord,
+  WorkflowRunResult
+} from "./types";
 
 type Mode = "console" | "flow";
 type DrawerTab = "history" | "connectors" | "settings";
@@ -83,6 +95,10 @@ export default function App() {
   const [ledger, setLedger] = useState<LedgerMirror[]>([]);
   const [metrics, setMetrics] = useState<MetricRecord[]>([]);
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
+  const [connectors, setConnectors] = useState<ConnectorRecord[]>([]);
+  const [settings, setSettings] = useState<Record<string, unknown>>({});
+  const [replaySnapshots, setReplaySnapshots] = useState<ReplaySnapshot[]>([]);
+  const [workflowRuns, setWorkflowRuns] = useState<WorkflowRunRecord[]>([]);
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [workflow, setWorkflow] = useState<Workflow>(defaultWorkflow);
   const [runResult, setRunResult] = useState<WorkflowRunResult | null>(null);
@@ -98,23 +114,55 @@ export default function App() {
 
   const refresh = useCallback(async () => {
     try {
-      const [health, nextChat, nextLedger, nextMetrics, nextWorkflows] = await Promise.all([
-        api.health(),
+      const health = await api.health();
+      const [
+        nextChat,
+        nextLedger,
+        nextMetrics,
+        nextWorkflows,
+        nextConnectors,
+        nextSettings,
+        nextReplaySnapshots,
+        nextWorkflowRuns,
+        nextState,
+        nextSessions
+      ] = await Promise.all([
         api.chat(sessionId),
         api.ledger(sessionId),
         api.metrics(sessionId),
-        api.workflows()
-      ]);
-      const [nextState, nextSessions] = await Promise.all([api.state(sessionId), api.sessions()]);
+        api.workflows(),
+        api.connectors(),
+        api.settings(),
+        api.replaySnapshots(sessionId),
+        api.workflowRuns(sessionId),
+        api.state(sessionId),
+        api.sessions()
+      ].map((request) => request.then((value) => ({ status: "fulfilled" as const, value })).catch(() => ({ status: "rejected" as const }))));
+      const apply = <T,>(result: { status: "fulfilled"; value: T } | { status: "rejected" }, setter: (value: T) => void) => {
+        if (result.status === "fulfilled") {
+          setter(result.value);
+        }
+      };
+      const stateResult = nextState as { status: "fulfilled"; value: StudioState } | { status: "rejected" };
+      const sessionsResult = nextSessions as { status: "fulfilled"; value: SessionRecord[] } | { status: "rejected" };
+      const workflowsResult = nextWorkflows as { status: "fulfilled"; value: Workflow[] } | { status: "rejected" };
       setStatus("online");
-      setState(nextState ?? health.state);
-      setChat(nextChat);
-      setLedger(nextLedger);
-      setMetrics(nextMetrics);
-      setSessions(Array.isArray(nextSessions) ? nextSessions : []);
-      setWorkflows(nextWorkflows);
-      if (nextWorkflows.length > 0 && workflow.id === defaultWorkflow.id) {
-        setWorkflow(nextWorkflows[0]);
+      setState(stateResult.status === "fulfilled" ? stateResult.value : health.state);
+      apply(nextChat as { status: "fulfilled"; value: ChatMessage[] } | { status: "rejected" }, setChat);
+      apply(nextLedger as { status: "fulfilled"; value: LedgerMirror[] } | { status: "rejected" }, setLedger);
+      apply(nextMetrics as { status: "fulfilled"; value: MetricRecord[] } | { status: "rejected" }, setMetrics);
+      apply(nextConnectors as { status: "fulfilled"; value: ConnectorRecord[] } | { status: "rejected" }, setConnectors);
+      apply(nextSettings as { status: "fulfilled"; value: Record<string, unknown> } | { status: "rejected" }, setSettings);
+      apply(nextReplaySnapshots as { status: "fulfilled"; value: ReplaySnapshot[] } | { status: "rejected" }, setReplaySnapshots);
+      apply(nextWorkflowRuns as { status: "fulfilled"; value: WorkflowRunRecord[] } | { status: "rejected" }, setWorkflowRuns);
+      if (sessionsResult.status === "fulfilled") {
+        setSessions(Array.isArray(sessionsResult.value) ? sessionsResult.value : []);
+      }
+      if (workflowsResult.status === "fulfilled") {
+        setWorkflows(workflowsResult.value);
+        if (workflowsResult.value.length > 0 && workflow.id === defaultWorkflow.id) {
+          setWorkflow(workflowsResult.value[0]);
+        }
       }
     } catch {
       setStatus("offline");
@@ -313,6 +361,48 @@ export default function App() {
     await refresh();
   }
 
+  async function runConnectorIntoCore(connectorType: string, config: Record<string, unknown>) {
+    setStatus("busy");
+    setReadout(`running ${connectorType} through Core LM...`);
+    try {
+      const result = await api.runConnectorIngest({
+        connector_type: connectorType,
+        session_id: sessionId,
+        branch,
+        config,
+        format: "markdown",
+        compression: {
+          steps: ["sanitize", "clean", "dedupe", "canonicalize", "schema_extract", "hash_compress", "contradiction_tag"],
+          allow_raw_commit: true
+        }
+      });
+      const ingest = result.ingest;
+      setReadout(`connector ${connectorType} committed ${String(ingest.event_id ?? "event")} | ${compactDigest(String(ingest.digest ?? ""))}`);
+      await refresh();
+    } catch (error) {
+      setReadout(error instanceof Error ? error.message : "connector run failed");
+      setStatus("online");
+    }
+  }
+
+  async function saveConnector(connector: ConnectorRecord) {
+    await api.saveConnector(connector);
+    setReadout(`saved connector ${connector.name}`);
+    await refresh();
+  }
+
+  async function deleteConnector(connectorId: string) {
+    await api.deleteConnector(connectorId);
+    setReadout(`deleted connector ${connectorId}`);
+    await refresh();
+  }
+
+  async function updateStudioSettings(patch: Record<string, unknown>) {
+    const next = await api.updateSettings(patch);
+    setSettings(next);
+    setReadout("settings persisted");
+  }
+
   const selectedNode = workflow.nodes.find((node) => node.id === selectedNodeId) ?? workflow.nodes[0];
 
   return (
@@ -459,12 +549,22 @@ export default function App() {
                   chat={filteredChat}
                   ledger={ledger}
                   provenance={provenance}
+                  replaySnapshots={replaySnapshots}
+                  workflowRuns={workflowRuns}
                   onRoute={routeLatest}
                   onPromote={promoteLatest}
                 />
               )}
-              {drawerTab === "connectors" && <ConnectorPanel />}
-              {drawerTab === "settings" && <SettingsPanel state={state} />}
+              {drawerTab === "connectors" && (
+                <ConnectorPanel
+                  connectors={connectors}
+                  branch={branch}
+                  onRun={runConnectorIntoCore}
+                  onSave={saveConnector}
+                  onDelete={deleteConnector}
+                />
+              )}
+              {drawerTab === "settings" && <SettingsPanel state={state} settings={settings} onUpdate={updateStudioSettings} />}
             </aside>
           )}
         </section>
@@ -515,6 +615,8 @@ function HistoryPanel({
   chat,
   ledger,
   provenance,
+  replaySnapshots,
+  workflowRuns,
   onRoute,
   onPromote
 }: {
@@ -523,6 +625,8 @@ function HistoryPanel({
   chat: ChatMessage[];
   ledger: LedgerMirror[];
   provenance: Record<string, unknown> | null;
+  replaySnapshots: ReplaySnapshot[];
+  workflowRuns: WorkflowRunRecord[];
   onRoute: () => Promise<void>;
   onPromote: () => Promise<void>;
 }) {
@@ -568,22 +672,120 @@ function HistoryPanel({
           <pre>{JSON.stringify(provenance, null, 2)}</pre>
         </div>
       )}
+      <h2>Replay</h2>
+      <div className="ledger-list">
+        {replaySnapshots.slice(-4).map((snapshot) => (
+          <article key={snapshot.id} className="ledger-item">
+            <strong>{snapshot.ok ? "consistent" : "attention"}</strong>
+            <span>{compactDigest(snapshot.digest)}</span>
+            <p>{snapshot.created_at}</p>
+          </article>
+        ))}
+      </div>
+      <h2>Workflow Runs</h2>
+      <div className="trace-list">
+        {workflowRuns.slice(-4).map((run) => (
+          <article key={run.id} className={`trace-item ${run.status}`}>
+            <strong>{run.workflow_id}</strong>
+            <span>{run.created_at}</span>
+            <code>{run.status}</code>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
 
-function ConnectorPanel() {
-  const inbound = ["OpenAI-compatible", "Ollama/local", "File", "Folder", "Web/API", "Clipboard", "REST", "Manual text", "Shell capture"];
+function ConnectorPanel({
+  connectors,
+  branch,
+  onRun,
+  onSave,
+  onDelete
+}: {
+  connectors: ConnectorRecord[];
+  branch: string;
+  onRun: (connectorType: string, config: Record<string, unknown>) => Promise<void>;
+  onSave: (connector: ConnectorRecord) => Promise<void>;
+  onDelete: (connectorId: string) => Promise<void>;
+}) {
+  const inbound = [
+    { type: "manual_text", label: "Manual text" },
+    { type: "openai_compatible_llm", label: "OpenAI-compatible" },
+    { type: "ollama_local_model", label: "Ollama/local" },
+    { type: "file_input", label: "File input" },
+    { type: "folder_watcher", label: "Folder watcher" },
+    { type: "generic_web_api_fetch", label: "Web/API fetch" },
+    { type: "generic_rest_input", label: "REST input" },
+    { type: "clipboard_input", label: "Clipboard" },
+    { type: "shell_cli_capture", label: "Shell capture" }
+  ];
   const outbound = ["HTTP/REST", "OpenAI-compatible", "Local model", "File export", "Clipboard", "Shell handoff", "Programming packet"];
+  const [connectorType, setConnectorType] = useState("openai_compatible_llm");
+  const [prompt, setPrompt] = useState("connector.demo = deterministic mock ingress");
+  const [connectorName, setConnectorName] = useState("Mock ingress");
+
+  function runConfigFor(type: string): Record<string, unknown> {
+    if (type === "file_input") {
+      return { path: prompt, content_type: "text/plain", branch };
+    }
+    if (type === "folder_watcher") {
+      return { path: prompt, pattern: "*", branch };
+    }
+    if (type === "generic_web_api_fetch" || type === "generic_rest_input") {
+      return { url: prompt, method: "GET", timeout: 30, branch };
+    }
+    if (type === "manual_text" || type === "clipboard_input") {
+      return { text: prompt, mock: true, branch };
+    }
+    return { prompt, text: prompt, mock: true, branch };
+  }
+
+  const runConfig = runConfigFor(connectorType);
+
+  function connectorDraft(): ConnectorRecord {
+    const id = connectorName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "connector";
+    return {
+      id,
+      name: connectorName,
+      direction: "inbound",
+      type: connectorType,
+      config: runConfig,
+      secret_refs: connectorType.includes("openai") ? ["OPENAI_API_KEY"] : [],
+      enabled: true
+    };
+  }
+
   return (
     <div className="drawer-body connector-grid">
       <section>
         <h2>Inbound</h2>
-        {inbound.map((item) => (
-          <span key={item} className="connector-pill">
-            <Cloud size={15} /> {item}
-          </span>
-        ))}
+        <label className="stacked-field">
+          Type
+          <select value={connectorType} onChange={(event) => setConnectorType(event.target.value)}>
+            {inbound.map((item) => (
+              <option key={item.type} value={item.type}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="stacked-field">
+          Name
+          <input value={connectorName} onChange={(event) => setConnectorName(event.target.value)} />
+        </label>
+        <label className="stacked-field">
+          Payload
+          <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} />
+        </label>
+        <div className="inline-actions">
+          <button onClick={() => void onRun(connectorType, runConfig)}>
+            <Play size={16} /> Run through Core
+          </button>
+          <button onClick={() => void onSave(connectorDraft())}>
+            <Save size={16} /> Save
+          </button>
+        </div>
       </section>
       <section>
         <h2>Outbound</h2>
@@ -593,11 +795,37 @@ function ConnectorPanel() {
           </span>
         ))}
       </section>
+      <section>
+        <h2>Saved</h2>
+        {connectors.length === 0 && <span className="connector-pill">No saved connectors</span>}
+        {connectors.map((connector) => (
+          <article key={connector.id} className="connector-record">
+            <div>
+              <strong>{connector.name}</strong>
+              <span>{connector.type}</span>
+            </div>
+            <button onClick={() => void onRun(connector.type, connector.config)}>
+              <Play size={15} /> Run
+            </button>
+            <button onClick={() => void onDelete(connector.id)}>
+              <Archive size={15} /> Delete
+            </button>
+          </article>
+        ))}
+      </section>
     </div>
   );
 }
 
-function SettingsPanel({ state }: { state: StudioState | null }) {
+function SettingsPanel({
+  state,
+  settings,
+  onUpdate
+}: {
+  state: StudioState | null;
+  settings: Record<string, unknown>;
+  onUpdate: (patch: Record<string, unknown>) => Promise<void>;
+}) {
   return (
     <div className="drawer-body settings-grid">
       <section>
@@ -611,6 +839,13 @@ function SettingsPanel({ state }: { state: StudioState | null }) {
         <span>secrets redacted</span>
         <span>offline-capable</span>
         <span>SQLite local store</span>
+      </section>
+      <section>
+        <h2>Preferences</h2>
+        <span>console density {String(settings.console_density ?? "comfortable")}</span>
+        <button onClick={() => void onUpdate({ console_density: settings.console_density === "compact" ? "comfortable" : "compact" })}>
+          <Settings size={16} /> Toggle density
+        </button>
       </section>
     </div>
   );
@@ -649,6 +884,37 @@ function FlowStudio({
       ...workflow,
       nodes: workflow.nodes.map((node) => (node.id === nodeId ? { ...node, ...patch } : node))
     });
+  }
+
+  function addNode(type: string) {
+    const id = `n${Date.now().toString(36)}`;
+    const base = selectedNode?.position ?? { x: 48, y: 96 };
+    const node: WorkflowNode = {
+      id,
+      type,
+      position: { x: base.x + 230, y: base.y + (workflow.nodes.length % 3) * 30 },
+      config: type === "core_lm" ? { format: "markdown" } : type === "outbound_prompt" ? { target_type: "programming_agent_packet" } : {}
+    };
+    const edge = selectedNode ? { id: `e-${selectedNode.id}-${id}`, source: selectedNode.id, target: id } : null;
+    setWorkflow({
+      ...workflow,
+      nodes: [...workflow.nodes, node],
+      edges: edge ? [...workflow.edges, edge] : workflow.edges
+    });
+    setSelectedNodeId(id);
+  }
+
+  function deleteSelectedNode() {
+    if (!selectedNode || workflow.nodes.length <= 1) {
+      return;
+    }
+    const remaining = workflow.nodes.filter((node) => node.id !== selectedNode.id);
+    setWorkflow({
+      ...workflow,
+      nodes: remaining,
+      edges: workflow.edges.filter((edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id)
+    });
+    setSelectedNodeId(remaining[0].id);
   }
 
   function pointerMove(event: React.PointerEvent) {
@@ -705,6 +971,21 @@ function FlowStudio({
         </button>
         <button onClick={onImport}>
           <Import size={17} /> Import
+        </button>
+        <button onClick={() => addNode("manual_text_input")}>
+          <FileInput size={17} /> Input
+        </button>
+        <button onClick={() => addNode("clean_text")}>
+          <Boxes size={17} /> Prep
+        </button>
+        <button onClick={() => addNode("core_lm")}>
+          <Bot size={17} /> Core
+        </button>
+        <button onClick={() => addNode("outbound_prompt")}>
+          <Send size={17} /> Out
+        </button>
+        <button onClick={deleteSelectedNode}>
+          <Archive size={17} /> Delete
         </button>
       </header>
 

@@ -1,4 +1,17 @@
-import type { ChatMessage, HealthState, LedgerMirror, MetricRecord, SessionRecord, StudioState, Workflow, WorkflowRunResult } from "./types";
+import type {
+  ChatMessage,
+  ConnectorRecord,
+  ConnectorRunResult,
+  HealthState,
+  LedgerMirror,
+  MetricRecord,
+  ReplaySnapshot,
+  SessionRecord,
+  StudioState,
+  Workflow,
+  WorkflowRunRecord,
+  WorkflowRunResult
+} from "./types";
 
 declare global {
   interface Window {
@@ -37,8 +50,35 @@ export const api = {
     }),
   chat: (sessionId = "default") => request<ChatMessage[]>(`/api/chat?session_id=${encodeURIComponent(sessionId)}&limit=200`),
   ledger: (sessionId = "default") => request<LedgerMirror[]>(`/api/ledger?session_id=${encodeURIComponent(sessionId)}&limit=200`),
+  ledgerEntry: (entryId: string, sessionId = "default") =>
+    request<LedgerMirror>(`/api/ledger/${encodeURIComponent(entryId)}?session_id=${encodeURIComponent(sessionId)}`),
   metrics: (sessionId = "default") => request<MetricRecord[]>(`/api/metrics?session_id=${encodeURIComponent(sessionId)}&limit=200`),
+  connectors: () => request<ConnectorRecord[]>("/api/connectors"),
+  connectorCatalog: () => request<Record<string, Array<Record<string, unknown>>>>("/api/connectors/catalog"),
+  saveConnector: (connector: ConnectorRecord) =>
+    request<ConnectorRecord>("/api/connectors", {
+      method: "POST",
+      body: JSON.stringify({ connector })
+    }),
+  deleteConnector: (connectorId: string) =>
+    request<Record<string, unknown>>(`/api/connectors/${encodeURIComponent(connectorId)}`, {
+      method: "DELETE"
+    }),
+  runConnectorIngest: (payload: {
+    connector_type: string;
+    session_id: string;
+    branch: string;
+    config: Record<string, unknown>;
+    format?: string;
+    compression?: Record<string, unknown>;
+  }) =>
+    request<{ connector: ConnectorRunResult; ingest: Record<string, unknown> }>("/api/connectors/run-ingest", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
   workflows: () => request<Workflow[]>("/api/workflows"),
+  workflowRuns: (sessionId = "default") =>
+    request<WorkflowRunRecord[]>(`/api/workflows/runs?session_id=${encodeURIComponent(sessionId)}&limit=100`),
   saveWorkflow: (workflow: Workflow) =>
     request<Workflow>("/api/workflows", {
       method: "POST",
@@ -81,8 +121,16 @@ export const api = {
       body: JSON.stringify({ branch, subject: "chat", attribute: "promoted_note" })
     }),
   replay: (sessionId = "default") => request<Record<string, unknown>>(`/api/replay?session_id=${encodeURIComponent(sessionId)}`),
+  replaySnapshots: (sessionId = "default") =>
+    request<ReplaySnapshot[]>(`/api/replay/snapshots?session_id=${encodeURIComponent(sessionId)}&limit=100`),
   provenance: (sessionId: string, branch: string, subject: string, attribute: string) =>
     request<Record<string, unknown>>(
       `/api/provenance?session_id=${encodeURIComponent(sessionId)}&branch=${encodeURIComponent(branch)}&subject=${encodeURIComponent(subject)}&attribute=${encodeURIComponent(attribute)}`
-    )
+    ),
+  settings: () => request<Record<string, unknown>>("/api/settings"),
+  updateSettings: (settings: Record<string, unknown>) =>
+    request<Record<string, unknown>>("/api/settings", {
+      method: "POST",
+      body: JSON.stringify({ settings })
+    })
 };

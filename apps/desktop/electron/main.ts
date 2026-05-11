@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import http from "node:http";
+import fs from "node:fs";
 import { ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 
 let mainWindow: BrowserWindow | null = null;
@@ -16,6 +17,24 @@ function repoRoot(): string {
     return path.join(process.resourcesPath, "corelm_service");
   }
   return path.resolve(__dirname, "../../..");
+}
+
+function pythonExecutable(): string {
+  if (process.env.PYTHON) {
+    return process.env.PYTHON;
+  }
+  const root = repoRoot();
+  const bundledPython = path.join(root, "python", "python.exe");
+  if (app.isPackaged && process.platform === "win32" && fs.existsSync(bundledPython)) {
+    return bundledPython;
+  }
+  const localPython = process.platform === "win32"
+    ? path.join(root, ".venv", "Scripts", "python.exe")
+    : path.join(root, ".venv", "bin", "python");
+  if (fs.existsSync(localPython)) {
+    return localPython;
+  }
+  return process.platform === "win32" ? "python" : "python3";
 }
 
 function waitForHealth(timeoutMs = 20000): Promise<void> {
@@ -78,7 +97,7 @@ async function startService(): Promise<void> {
       stdio: "pipe"
     }) as ChildProcessWithoutNullStreams;
   } else {
-    const python = process.env.PYTHON || (process.platform === "win32" ? "python" : "python3");
+    const python = pythonExecutable();
     serviceProcess = spawn(python, ["-m", "services.core_service.corelm_studio"], {
       cwd: repoRoot(),
       env,
@@ -91,6 +110,10 @@ async function startService(): Promise<void> {
   });
   serviceProcess.stderr.on("data", (data) => {
     console.error(`[corelm-service] ${data.toString().trim()}`);
+  });
+  serviceProcess.on("error", (error) => {
+    console.error(`[corelm-service] failed to start: ${error.message}`);
+    serviceProcess = null;
   });
   serviceProcess.on("exit", () => {
     serviceProcess = null;
@@ -135,7 +158,10 @@ async function createWindow(): Promise<void> {
 
 app.whenReady().then(() => {
   ipcMain.handle("corelm:service-url", () => serviceUrl);
-  createWindow();
+  void createWindow().catch((error) => {
+    console.error(`[corelm-studio] failed to create window: ${error instanceof Error ? error.message : String(error)}`);
+    app.quit();
+  });
 });
 
 app.on("window-all-closed", () => {
@@ -151,6 +177,8 @@ app.on("before-quit", () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    void createWindow().catch((error) => {
+      console.error(`[corelm-studio] failed to recreate window: ${error instanceof Error ? error.message : String(error)}`);
+    });
   }
 });

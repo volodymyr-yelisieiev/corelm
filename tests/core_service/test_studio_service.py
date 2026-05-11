@@ -71,6 +71,15 @@ def test_connector_and_outbound_mocks_are_deterministic(tmp_path):
         )
         assert connector.status_code == 200
         assert connector.json()["raw_payload"] == "[mock-openai] hello"
+        assert connector.json()["normalized_payload"] == "[mock-openai] hello"
+
+        rest = client.post(
+            "/api/connectors/run",
+            json={"connector_type": "generic_rest_input", "branch": "corelm", "config": {"url": "https://example.invalid/api"}},
+        )
+        assert rest.status_code == 200
+        assert rest.json()["metadata"]["source_type"] == "generic_rest_input"
+        assert rest.json()["normalized_payload"].startswith("{")
 
         outbound = client.post(
             "/api/outbound/route",
@@ -84,6 +93,107 @@ def test_connector_and_outbound_mocks_are_deterministic(tmp_path):
         assert outbound.status_code == 200
         assert outbound.json()["status"] == "prepared"
         assert "Core LM Developer Handoff Packet" in outbound.json()["packet"]
+
+
+def test_connector_run_ingest_preserves_core_lm_boundary(tmp_path):
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/connectors/run-ingest",
+            json={
+                "connector_type": "ollama_local_model",
+                "session_id": "default",
+                "branch": "corelm",
+                "config": {"prompt": "model.role = local perturbation", "mock": True},
+                "compression": {"steps": ["clean", "schema_extract"], "allow_raw_commit": True},
+            },
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["connector"]["metadata"]["source_type"] == "ollama_local_model"
+        assert payload["ingest"]["ledger_entry"]["entry_id"] == "l1"
+        assert payload["ingest"]["chat_message"]["origin"] == "core_lm"
+        assert client.get("/api/chat").json()[0]["ledger_entry_id"] == "l1"
+
+
+def test_replay_snapshots_workflow_runs_and_settings_are_persisted(tmp_path):
+    app = create_app(tmp_path / "studio.sqlite")
+    workflow = {
+        "id": "persisted-run-flow",
+        "name": "Persisted Run Flow",
+        "nodes": [
+            {"id": "n1", "type": "manual_text_input", "position": {"x": 0, "y": 0}, "config": {"text": "project.name = Core LM Studio"}},
+            {"id": "n2", "type": "core_lm", "position": {"x": 200, "y": 0}, "config": {"compression": {"allow_raw_commit": True}}},
+        ],
+        "edges": [{"id": "e1", "source": "n1", "target": "n2"}],
+    }
+    with TestClient(app) as client:
+        settings = client.post("/api/settings", json={"settings": {"console_density": "comfortable"}})
+        assert settings.status_code == 200
+        assert client.get("/api/settings").json()["console_density"] == "comfortable"
+
+        run = client.post("/api/workflows/persisted-run-flow/run", json={"workflow": workflow})
+        assert run.status_code == 200
+        assert run.json()["run_id"].startswith("run-")
+        runs = client.get("/api/workflows/runs").json()
+        assert runs[-1]["workflow_id"] == "persisted-run-flow"
+        assert runs[-1]["trace"][-1]["ledger_entry_id"] == "l1"
+
+        snapshots = client.get("/api/replay/snapshots").json()
+        assert snapshots[-1]["ok"] is True
+        ledger_detail = client.get("/api/ledger/l1").json()
+        assert ledger_detail["corelm"]["entry_id"] == "l1"
+
+
+def test_workflow_uses_connector_normalized_payload_before_core_ingest(tmp_path):
+    app = create_app(tmp_path / "studio.sqlite")
+    workflow = {
+        "id": "normalized-workflow",
+        "name": "Normalized Workflow",
+        "nodes": [
+            {
+                "id": "n1",
+                "type": "manual_text_input",
+                "position": {"x": 0, "y": 0},
+                "config": {"text": "  project.name = Core LM Studio  \n\n"},
+            },
+            {"id": "n2", "type": "core_lm", "position": {"x": 200, "y": 0}, "config": {"compression": {"allow_raw_commit": True}}},
+        ],
+        "edges": [{"id": "e1", "source": "n1", "target": "n2"}],
+    }
+    with TestClient(app) as client:
+        response = client.post("/api/workflows/normalized-workflow/run", json={"workflow": workflow})
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["outputs"]["n1"]["raw_payload"] == "  project.name = Core LM Studio  \n\n"
+        assert payload["outputs"]["n1"]["normalized_payload"] == "project.name = Core LM Studio"
+        ledger = client.get("/api/ledger/l1").json()
+        assert ledger["metadata"]["compression"]["raw_text"] == "[available-before-sanitized-commit]"
+        assert "project.name = Core LM Studio" in ledger["metadata"]["compression"]["canonical_text"]
+        assert "  project.name" not in ledger["raw_text"]
+
+
+def test_workflow_without_core_node_creates_session_before_run_persistence(tmp_path):
+    app = create_app(tmp_path / "studio.sqlite")
+    workflow = {
+        "id": "no-core-workflow",
+        "name": "No Core Workflow",
+        "nodes": [
+            {"id": "n1", "type": "manual_text_input", "position": {"x": 0, "y": 0}, "config": {"text": "hello"}},
+        ],
+        "edges": [],
+    }
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/workflows/no-core-workflow/run",
+            json={"workflow": workflow, "session_id": "new-session", "branch": "corelm"},
+        )
+        assert response.status_code == 200
+        assert response.json()["status"] == "ok"
+        runs = client.get("/api/workflows/runs?session_id=new-session").json()
+        assert runs[-1]["workflow_id"] == "no-core-workflow"
+        sessions = client.get("/api/sessions").json()
+        assert any(session["id"] == "new-session" for session in sessions)
 
 
 def test_ingest_redacts_secrets_even_without_sanitize_step(tmp_path):

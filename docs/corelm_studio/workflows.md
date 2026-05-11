@@ -27,3 +27,15 @@ Supported node families:
 - Output: formatting, chat, outbound prompt, file export, clipboard export.
 
 Sample workflows live in `sample_workflows/`.
+
+Workflow runs are persisted in SQLite and exposed at
+`GET /api/workflows/runs?session_id=default`. Each run stores status, trace
+events, node outputs, final output, and a run id. Flow Studio uses this history
+for execution inspection.
+
+Current samples:
+
+- `sample_workflows/canonical_core_flow.json`
+- `sample_workflows/mock_llm_to_chat.json`
+- `sample_workflows/mock_local_model_to_packet.json`
+- `sample_workflows/file_ingest_to_replay.json`

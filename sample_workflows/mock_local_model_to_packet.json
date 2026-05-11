@@ -1,0 +1,61 @@
+{
+  "id": "mock-local-model-to-packet",
+  "name": "Mock Local Model To Programming Packet",
+  "description": "Ollama-style local model mock through preprocessing, Core LM, chat, and a programming-agent packet.",
+  "schedule": {
+    "enabled": false,
+    "cron": ""
+  },
+  "nodes": [
+    {
+      "id": "local",
+      "type": "ollama_local_model",
+      "position": { "x": 48, "y": 132 },
+      "config": {
+        "mock": true,
+        "model": "llama3.1",
+        "prompt": "local_model.role = deterministic perturbation source"
+      }
+    },
+    {
+      "id": "clean",
+      "type": "clean_text",
+      "position": { "x": 292, "y": 132 },
+      "config": {}
+    },
+    {
+      "id": "core",
+      "type": "core_lm",
+      "position": { "x": 536, "y": 132 },
+      "config": {
+        "format": "developer_handoff_packet",
+        "compression": {
+          "steps": ["sanitize", "clean", "canonicalize", "schema_extract", "hash_compress", "contradiction_tag"],
+          "allow_raw_commit": true
+        }
+      }
+    },
+    {
+      "id": "chat",
+      "type": "chat",
+      "position": { "x": 780, "y": 132 },
+      "config": {}
+    },
+    {
+      "id": "packet",
+      "type": "outbound_prompt",
+      "position": { "x": 1024, "y": 132 },
+      "config": {
+        "target_type": "programming_agent_packet",
+        "packet_type": "implementation_packet",
+        "mock": true
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "local", "target": "clean" },
+    { "id": "e2", "source": "clean", "target": "core" },
+    { "id": "e3", "source": "core", "target": "chat" },
+    { "id": "e4", "source": "chat", "target": "packet" }
+  ]
+}

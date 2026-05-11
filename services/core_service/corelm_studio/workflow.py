@@ -47,6 +47,8 @@ class WorkflowEngine:
         workflow_id = workflow.get("id") or f"workflow-{uuid.uuid4().hex[:8]}"
         workflow["id"] = workflow_id
         inputs = inputs or {}
+        if hasattr(self.core, "ensure_session"):
+            self.core.ensure_session(session_id, f"Session {session_id}", 0, branch)
         outputs: dict[str, dict[str, Any]] = {}
         trace: list[dict[str, Any]] = []
         edges = workflow.get("edges", [])
@@ -73,9 +75,14 @@ class WorkflowEngine:
                     connector_type = "manual_text" if node_type == "manual_text_input" else node_type
                     connector_config = config | {"text": inputs.get("text", config.get("text", ""))}
                     result = run_inbound_connector(connector_type, connector_config, branch=branch)
-                    value = result.raw_payload
+                    value = result.normalized_payload or result.raw_payload
                     event["metadata"] = result.metadata
-                    outputs[node_id] = {"value": value, "metadata": result.metadata}
+                    outputs[node_id] = {
+                        "value": value,
+                        "raw_payload": result.raw_payload,
+                        "normalized_payload": result.normalized_payload,
+                        "metadata": result.metadata,
+                    }
                 elif node_type in {
                     "clean_text",
                     "chunking",
@@ -161,10 +168,21 @@ class WorkflowEngine:
                 event["error"] = str(exc)
             trace.append(event)
             last_value = str(outputs[node_id].get("value") or last_value)
-        return {
+        result = {
             "workflow_id": workflow_id,
             "status": "ok" if all(item["status"] != "error" for item in trace) else "error",
             "trace": trace,
             "outputs": outputs,
             "final": last_value,
         }
+        if hasattr(self.core, "db") and hasattr(self.core.db, "record_workflow_run"):
+            run = self.core.db.record_workflow_run(
+                workflow_id,
+                session_id,
+                result["status"],
+                trace,
+                outputs,
+                last_value,
+            )
+            result["run_id"] = run.get("id")
+        return result

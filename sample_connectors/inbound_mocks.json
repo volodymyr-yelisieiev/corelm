@@ -33,6 +33,41 @@
         "trust_level": "medium"
       },
       "secret_refs": []
+    },
+    {
+      "id": "mock-clipboard",
+      "name": "Mock Clipboard",
+      "direction": "inbound",
+      "type": "clipboard_input",
+      "config": {
+        "text": "clipboard.note = external interaction source",
+        "trust_level": "medium"
+      },
+      "secret_refs": []
+    },
+    {
+      "id": "mock-shell",
+      "name": "Mock Shell Capture",
+      "direction": "inbound",
+      "type": "shell_cli_capture",
+      "config": {
+        "mock": true,
+        "command": "git status --short",
+        "trust_level": "low"
+      },
+      "secret_refs": []
+    },
+    {
+      "id": "sample-file",
+      "name": "Sample File Input",
+      "direction": "inbound",
+      "type": "file_input",
+      "config": {
+        "path": "examples/demo_session.json",
+        "content_type": "application/json",
+        "trust_level": "medium"
+      },
+      "secret_refs": []
     }
   ]
 }

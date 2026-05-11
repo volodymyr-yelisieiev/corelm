@@ -22,6 +22,17 @@ class ConnectorRunRequest(BaseModel):
     branch: str = "corelm"
 
 
+class ConnectorIngestRequest(BaseModel):
+    connector_type: str
+    config: dict[str, Any] = Field(default_factory=dict)
+    session_id: str = "default"
+    branch: str = "corelm"
+    workflow_id: str | None = None
+    format: str = "markdown"
+    compression: dict[str, Any] = Field(default_factory=dict)
+    annotations: list[dict[str, Any]] = Field(default_factory=list)
+
+
 class ConnectorSaveRequest(BaseModel):
     connector: dict[str, Any]
 
@@ -74,6 +85,10 @@ class ChatPromoteRequest(BaseModel):
     subject: str = "chat"
     attribute: str = "note"
     tags: list[str] = Field(default_factory=lambda: ["promoted-from-chat"])
+
+
+class SettingsUpdateRequest(BaseModel):
+    settings: dict[str, Any] = Field(default_factory=dict)
 
 
 FormatName = Literal[

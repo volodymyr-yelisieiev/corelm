@@ -51,6 +51,23 @@ export type ChatMessage = {
   created_at: string;
 };
 
+export type ConnectorRecord = {
+  id: string;
+  name: string;
+  direction: "inbound" | "outbound" | string;
+  type: string;
+  config: Record<string, unknown>;
+  secret_refs: string[];
+  enabled: boolean;
+  secrets_metadata?: Array<Record<string, unknown>>;
+};
+
+export type ConnectorRunResult = {
+  raw_payload: string;
+  normalized_payload: string;
+  metadata: Record<string, unknown>;
+};
+
 export type LedgerEntryCore = {
   entry_id: string;
   event_id: string;
@@ -109,8 +126,29 @@ export type Workflow = {
 
 export type WorkflowRunResult = {
   workflow_id: string;
+  run_id?: string | null;
   status: "ok" | "error" | string;
   trace: Array<Record<string, unknown>>;
   outputs: Record<string, Record<string, unknown>>;
   final: string;
+};
+
+export type WorkflowRunRecord = {
+  id: string;
+  workflow_id: string;
+  session_id: string;
+  status: string;
+  trace: Array<Record<string, unknown>>;
+  outputs: Record<string, Record<string, unknown>>;
+  final_output: string;
+  created_at: string;
+};
+
+export type ReplaySnapshot = {
+  id: string;
+  session_id: string;
+  digest: string;
+  ok: boolean;
+  snapshot: Record<string, unknown>;
+  created_at: string;
 };

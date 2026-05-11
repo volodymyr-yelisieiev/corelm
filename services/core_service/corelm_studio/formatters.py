@@ -74,12 +74,17 @@ def format_payload(content: str, fmt: str, metadata: dict[str, Any] | None = Non
 def prompt_template(packet_type: str, content: str, metadata: dict[str, Any] | None = None) -> str:
     metadata = sanitize_obj(metadata or {})
     base = format_payload(content, "developer_handoff_packet", metadata)
+    packet_type = packet_type.lower().replace("-", "_")
+    if packet_type == "implementation_packet":
+        return base + "\n## Requested Output\nImplement the change, preserve existing architecture, and include verification evidence.\n"
     if packet_type == "bug_report_packet":
         return base + "\n## Requested Output\nDiagnose the bug, propose a fix, and include tests.\n"
     if packet_type == "code_review_packet":
         return base + "\n## Requested Output\nReturn prioritized findings with file and line references.\n"
     if packet_type == "repo_handoff_packet":
         return base + "\n## Requested Output\nSummarize repo state, next actions, and verification gaps.\n"
+    if packet_type == "prompt_packet" or packet_type == "prompt_for_coding_agent":
+        return base + "\n## Requested Output\nConvert this into a concise, executable prompt for an external coding agent.\n"
     if packet_type == "json_job_spec":
         return json.dumps({"type": packet_type, "content": content, "metadata": metadata}, ensure_ascii=False, indent=2)
     if packet_type == "markdown_brief":

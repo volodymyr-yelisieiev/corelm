@@ -1,0 +1,51 @@
+{
+  "id": "file-ingest-to-replay",
+  "name": "File Ingest To Replay",
+  "description": "Example file input workflow that keeps file content as an external source and commits only through Core LM.",
+  "schedule": {
+    "enabled": false,
+    "cron": ""
+  },
+  "nodes": [
+    {
+      "id": "file",
+      "type": "file_input",
+      "position": { "x": 48, "y": 96 },
+      "config": {
+        "path": "examples/demo_session.json",
+        "content_type": "application/json"
+      }
+    },
+    {
+      "id": "digest",
+      "type": "state_digest_generation",
+      "position": { "x": 292, "y": 96 },
+      "config": {
+        "hash_only": true
+      }
+    },
+    {
+      "id": "core",
+      "type": "core_lm",
+      "position": { "x": 536, "y": 96 },
+      "config": {
+        "format": "markdown",
+        "compression": {
+          "steps": ["sanitize", "clean", "canonicalize", "hash_compress"],
+          "allow_raw_commit": true
+        }
+      }
+    },
+    {
+      "id": "chat",
+      "type": "chat",
+      "position": { "x": 780, "y": 96 },
+      "config": {}
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "file", "target": "digest" },
+    { "id": "e2", "source": "digest", "target": "core" },
+    { "id": "e3", "source": "core", "target": "chat" }
+  ]
+}

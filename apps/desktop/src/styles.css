@@ -425,6 +425,32 @@ select {
   background: transparent;
 }
 
+.stacked-field {
+  width: 100%;
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stacked-field input,
+.stacked-field select {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.stacked-field textarea {
+  width: 100%;
+  min-height: 112px;
+  padding: 12px;
+  line-height: 1.4;
+  resize: vertical;
+}
+
 .inline-actions {
   gap: 8px;
   margin: 12px 0;
@@ -510,6 +536,43 @@ select {
   gap: 8px;
 }
 
+.connector-record {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #26313c;
+  border-radius: 8px;
+  background: #0f141a;
+}
+
+.connector-record div {
+  display: grid;
+  gap: 3px;
+}
+
+.connector-record span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.connector-record button,
+.settings-grid button {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  padding: 0 10px;
+}
+
 .settings-grid section span {
   width: 100%;
   color: var(--muted);
@@ -526,6 +589,7 @@ select {
 
 .flow-toolbar {
   gap: 10px;
+  flex-wrap: wrap;
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 18px;

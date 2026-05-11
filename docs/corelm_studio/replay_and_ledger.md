@@ -26,3 +26,13 @@ Structured claims include source event id and source text. The sidecar exposes
 The sidecar calls `CoreLMProduct.replay_verify()` after ingestion and stores a
 replay snapshot. A replay is consistent when the replay digest matches the
 current digest.
+
+Useful routes:
+
+- `GET /api/ledger` lists mirrored append-only ledger entries.
+- `GET /api/ledger/{entry_id}` returns one ledger mirror with Core LM payload and
+  ingestion metadata.
+- `GET /api/replay` returns the current replay verification and exported Core LM
+  state snapshot.
+- `GET /api/replay/snapshots` lists persisted replay snapshots for the selected
+  session.

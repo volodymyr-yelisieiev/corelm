@@ -19,6 +19,7 @@ node_modules/
 apps/desktop/dist/
 apps/desktop/dist-electron/
 dist_windows/
+runtime/
 .local100_wheelhouse/
 *.whl
 *.tar.gz

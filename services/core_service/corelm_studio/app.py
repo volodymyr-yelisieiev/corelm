@@ -7,16 +7,18 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from .connectors import run_inbound_connector
+from .connectors import connector_catalog, run_inbound_connector
 from .outbound import route_outbound
 from .schemas import (
     ChatPromoteRequest,
+    ConnectorIngestRequest,
     ChatRouteRequest,
     ConnectorRunRequest,
     ConnectorSaveRequest,
     IngestRequest,
     OutboundRouteRequest,
     SessionCreateRequest,
+    SettingsUpdateRequest,
     WorkflowRunRequest,
     WorkflowSaveRequest,
 )
@@ -67,6 +69,24 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         except Exception as exc:  # noqa: BLE001
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/api/connectors/run-ingest")
+    def run_connector_ingest(request: ConnectorIngestRequest) -> dict[str, Any]:
+        try:
+            connector_result = run_inbound_connector(request.connector_type, request.config, request.branch)
+            ingest = core.ingest(
+                session_id=request.session_id,
+                branch=request.branch,
+                text=connector_result.normalized_payload or connector_result.raw_payload,
+                source=connector_result.metadata | {"connector_type": request.connector_type},
+                workflow_id=request.workflow_id,
+                fmt=request.format,
+                compression=request.compression,
+                annotations=request.annotations,
+            )
+            return {"connector": connector_result.to_dict(), "ingest": ingest}
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.get("/api/connectors/types")
     def connectors() -> dict[str, Any]:
         return {
@@ -91,6 +111,10 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
                 "programming_agent_packet",
             ],
         }
+
+    @app.get("/api/connectors/catalog")
+    def connectors_catalog() -> dict[str, Any]:
+        return connector_catalog()
 
     @app.get("/api/connectors")
     def list_connectors() -> list[dict[str, Any]]:
@@ -165,6 +189,13 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     def ledger(session_id: str = "default", limit: int = Query(default=100, ge=1, le=500)) -> list[dict[str, Any]]:
         return core.ledger(session_id, limit)
 
+    @app.get("/api/ledger/{entry_id}")
+    def ledger_entry(entry_id: str, session_id: str = "default") -> dict[str, Any]:
+        entry = core.db.get_ledger_entry(session_id, entry_id)
+        if not entry:
+            raise HTTPException(status_code=404, detail="ledger entry not found")
+        return entry
+
     @app.get("/api/metrics")
     def metrics(session_id: str = "default", limit: int = Query(default=100, ge=1, le=500)) -> list[dict[str, Any]]:
         return core.metrics(session_id, limit)
@@ -177,9 +208,25 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     def replay(session_id: str = "default") -> dict[str, Any]:
         return core.replay(session_id)
 
+    @app.get("/api/replay/snapshots")
+    def replay_snapshots(session_id: str = "default", limit: int = Query(default=50, ge=1, le=200)) -> list[dict[str, Any]]:
+        return core.db.list_replay_snapshots(session_id, limit)
+
+    @app.get("/api/settings")
+    def settings() -> dict[str, Any]:
+        return core.db.get_settings()
+
+    @app.post("/api/settings")
+    def update_settings(request: SettingsUpdateRequest) -> dict[str, Any]:
+        return core.db.update_settings(request.settings)
+
     @app.get("/api/workflows")
     def list_workflows() -> list[dict[str, Any]]:
         return core.db.list_workflows()
+
+    @app.get("/api/workflows/runs")
+    def list_workflow_runs(session_id: str = "default", limit: int = Query(default=50, ge=1, le=200)) -> list[dict[str, Any]]:
+        return core.db.list_workflow_runs(session_id, limit)
 
     @app.post("/api/workflows")
     def save_workflow(request: WorkflowSaveRequest) -> dict[str, Any]:
@@ -231,6 +278,8 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
             "code_review_packet",
             "bug_report_packet",
             "repo_handoff_packet",
+            "implementation_packet",
+            "prompt_packet",
             "prompt_for_coding_agent",
         ]
 

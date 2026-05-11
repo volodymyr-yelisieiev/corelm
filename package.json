@@ -12,8 +12,9 @@
     "desktop:dev": "npm run desktop:build:main && concurrently -k \"npm run desktop:dev:vite\" \"wait-on http://127.0.0.1:5173 && electron apps/desktop/dist-electron/main.js\"",
     "desktop:build": "npm run desktop:build:main && vite build --config apps/desktop/vite.config.ts",
     "desktop:test": "vitest run --config apps/desktop/vitest.config.ts",
-    "desktop:package:win": "npm run desktop:build && electron-builder --win --x64 --config apps/desktop/electron-builder.json",
-    "desktop:package:win:dir": "npm run desktop:build && electron-builder --win --x64 --dir --config apps/desktop/electron-builder.json",
+    "desktop:prepare:python:win": "node scripts/run_python.mjs scripts/prepare_windows_python.py",
+    "desktop:package:win": "npm run desktop:prepare:python:win && npm run desktop:build && electron-builder --win --x64 --config apps/desktop/electron-builder.json",
+    "desktop:package:win:dir": "npm run desktop:prepare:python:win && npm run desktop:build && electron-builder --win --x64 --dir --config apps/desktop/electron-builder.json",
     "test:python": "node scripts/run_python.mjs -m pytest -q",
     "test:studio": "npm run desktop:test && node scripts/run_python.mjs -m pytest -q",
     "studio:smoke": "node scripts/run_python.mjs -m pytest -q tests/core_service"
