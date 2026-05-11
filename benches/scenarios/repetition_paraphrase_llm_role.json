@@ -1,0 +1,88 @@
+{
+  "name": "repetition_paraphrase_llm_role",
+  "description": "Near-duplicate paraphrases should not create uncontrolled durable growth.",
+  "tags": [
+    "dedupe",
+    "paraphrase"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s10_e1",
+      "branch": "core",
+      "text": "The LLM is an excitation source only.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "llm",
+          "attribute": "role",
+          "value": "excitation source only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s10_e2",
+      "branch": "core",
+      "text": "Repeated in plain language: the model may generate impulses, but it is not the truth store.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "llm",
+          "attribute": "role",
+          "value": "excitation source only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s10_e3",
+      "branch": "core",
+      "text": "Again: the LLM drives excitation and does not hold canonical truth.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "llm",
+          "attribute": "role",
+          "value": "excitation source only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s10_e4",
+      "branch": "core",
+      "text": "Paraphrase: truth lives in state and ledger, while the model only excites the system.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "llm",
+          "attribute": "role",
+          "value": "excitation source only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s10_q1",
+      "text": "What is the role of the LLM?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "llm",
+      "attribute": "role",
+      "expected": "excitation source only",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+Core LM Full-Spectrum Kit Proprietary License
+Copyright (c) 2026. All rights reserved.
+
+This repository and all bundled materials, including source code, benchmark
+scenarios, documentation, reports, and examples, are proprietary.
+
+Permitted without separate written permission:
+1. Internal evaluation of the bundle in unmodified or locally adapted form.
+2. Reproduction of benchmark and demo results for internal review.
+3. Archival copying for backup and compliance retention.
+
+Not permitted without separate written permission:
+1. Public redistribution of the source or compiled artifacts.
+2. Commercial hosting, sublicensing, resale, or white-label use.
+3. Removal of attribution or provenance notices.
+4. Use of the bundle to represent a hosted production service as validated.
+
+THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR SECURITY ASSURANCE.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR
+OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE MATERIALS OR THE
+USE OR OTHER DEALINGS IN THE MATERIALS.
+
+For commercial licensing, deployment rights, or customer-facing use, attach
+explicit written terms outside this file.

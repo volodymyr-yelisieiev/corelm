@@ -1,0 +1,159 @@
+{
+  "name": "adversarial_mixed_branch",
+  "description": "Several branches share overlapping words such as state and status.",
+  "tags": [
+    "adversarial",
+    "branches"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s14_e1",
+      "branch": "core",
+      "text": "Core state norm is a mandatory metric.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "metric",
+          "attribute": "state_norm",
+          "value": "mandatory",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s14_e2",
+      "branch": "infra",
+      "text": "Infra state is green and the API port is 9090.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "api",
+          "attribute": "port",
+          "value": "9090",
+          "claim_type": "fact"
+        },
+        {
+          "subject": "infra",
+          "attribute": "status",
+          "value": "green",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s14_e3",
+      "branch": "publication",
+      "text": "Publication state is draft-ready.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "publication",
+          "attribute": "state",
+          "value": "draft-ready",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s14_e4",
+      "branch": "core",
+      "text": "Core drift is also mandatory.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "metric",
+          "attribute": "drift",
+          "value": "mandatory",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    },
+    {
+      "event_id": "s14_e5",
+      "branch": "infra",
+      "text": "Infra status changed to amber.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "infra",
+          "attribute": "status",
+          "value": "amber",
+          "claim_type": "correction"
+        }
+      ],
+      "timestamp": 5,
+      "meta": {}
+    },
+    {
+      "event_id": "s14_e6",
+      "branch": "publication",
+      "text": "Publication state changed to release-ready.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "publication",
+          "attribute": "state",
+          "value": "release-ready",
+          "claim_type": "correction"
+        }
+      ],
+      "timestamp": 6,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s14_q1",
+      "text": "What is the API port in infra?",
+      "kind": "value",
+      "target_branch": "infra",
+      "subject": "api",
+      "attribute": "port",
+      "expected": "9090",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s14_q2",
+      "text": "What is the current infra status?",
+      "kind": "value",
+      "target_branch": "infra",
+      "subject": "infra",
+      "attribute": "status",
+      "expected": "amber",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s14_q3",
+      "text": "What is the publication state?",
+      "kind": "value",
+      "target_branch": "publication",
+      "subject": "publication",
+      "attribute": "state",
+      "expected": "release-ready",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s14_q4",
+      "text": "Is state norm mandatory?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "metric",
+      "attribute": "state_norm",
+      "expected": "mandatory",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

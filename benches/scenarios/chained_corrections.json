@@ -1,0 +1,83 @@
+{
+  "name": "chained_corrections",
+  "description": "Multiple sequential corrections should preserve the latest truth state.",
+  "tags": [
+    "correction",
+    "history"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s15_e1",
+      "branch": "benchmark",
+      "text": "Initial benchmark mode is synthetic only.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "mode",
+          "value": "synthetic only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s15_e2",
+      "branch": "benchmark",
+      "text": "Revision: benchmark mode is mixed traces.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "mode",
+          "value": "mixed traces",
+          "claim_type": "correction"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s15_e3",
+      "branch": "benchmark",
+      "text": "Final decision: benchmark mode is real traces plus synthetic controls.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "mode",
+          "value": "real traces plus synthetic controls",
+          "claim_type": "correction"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s15_q1",
+      "text": "What is the final benchmark mode?",
+      "kind": "value",
+      "target_branch": "benchmark",
+      "subject": "benchmark",
+      "attribute": "mode",
+      "expected": "real traces plus synthetic controls",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s15_q2",
+      "text": "What was the previous mode before the final decision?",
+      "kind": "superseded_by",
+      "target_branch": "benchmark",
+      "subject": "benchmark",
+      "attribute": "mode",
+      "expected": "mixed traces -> real traces plus synthetic controls",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "core-lm-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Core LM Studio Windows desktop app with Electron, React, TypeScript, and a Python Core LM sidecar.",
+  "author": "Core LM Authors",
+  "main": "apps/desktop/dist-electron/main.js",
+  "scripts": {
+    "service:dev": "node scripts/run_python.mjs -m services.core_service.corelm_studio",
+    "desktop:dev:vite": "vite --host 127.0.0.1 --config apps/desktop/vite.config.ts",
+    "desktop:build:main": "tsc -p apps/desktop/tsconfig.electron.json",
+    "desktop:dev": "npm run desktop:build:main && concurrently -k \"npm run desktop:dev:vite\" \"wait-on http://127.0.0.1:5173 && electron apps/desktop/dist-electron/main.js\"",
+    "desktop:build": "npm run desktop:build:main && vite build --config apps/desktop/vite.config.ts",
+    "desktop:test": "vitest run --config apps/desktop/vitest.config.ts",
+    "desktop:package:win": "npm run desktop:build && electron-builder --win --x64 --config apps/desktop/electron-builder.json",
+    "desktop:package:win:dir": "npm run desktop:build && electron-builder --win --x64 --dir --config apps/desktop/electron-builder.json",
+    "test:python": "node scripts/run_python.mjs -m pytest -q",
+    "test:studio": "npm run desktop:test && node scripts/run_python.mjs -m pytest -q",
+    "studio:smoke": "node scripts/run_python.mjs -m pytest -q tests/core_service"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.1",
+    "electron-is-dev": "^3.0.1",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "vite": "^7.2.7"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "concurrently": "^9.2.1",
+    "electron": "^39.2.7",
+    "electron-builder": "^26.0.12",
+    "jsdom": "^27.3.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15",
+    "wait-on": "^9.0.3"
+  },
+  "build": {
+    "appId": "local.corelm.studio",
+    "productName": "Core LM Studio"
+  }
+}

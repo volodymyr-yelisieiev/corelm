@@ -1,0 +1,41 @@
+{
+  "criteria": [
+    {
+      "basis": "three formal source documents integrated into package docs",
+      "name": "formal_specification",
+      "score": 100
+    },
+    {
+      "basis": "reference kernel, oracle kernel, invariants, ledger and replay contracts implemented",
+      "name": "architecture_definition",
+      "score": 100
+    },
+    {
+      "basis": "reference kernel passed 18/18 scenarios",
+      "name": "benchmark_validation",
+      "score": 100
+    },
+    {
+      "basis": "oracle core passed 18/18 scenarios",
+      "name": "oracle_surrogate",
+      "score": 100
+    },
+    {
+      "basis": "deterministic implementation benchmarked against oracle-grade suite",
+      "name": "reference_kernel_implementation",
+      "score": 100
+    },
+    {
+      "basis": "tests, runner, workflow, and frozen scenario set included",
+      "name": "reproducibility",
+      "score": 100
+    },
+    {
+      "basis": "README, manuscript, architecture note, claim discipline, and reports included",
+      "name": "publication_packaging",
+      "score": 100
+    }
+  ],
+  "overall_score": 100.0,
+  "target": "publication_research_artifact"
+}

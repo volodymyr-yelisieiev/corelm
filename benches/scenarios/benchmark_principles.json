@@ -1,0 +1,110 @@
+{
+  "name": "benchmark_principles",
+  "description": "Project benchmark policy trace.",
+  "tags": [
+    "benchmark",
+    "policy"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s17_e1",
+      "branch": "benchmark",
+      "text": "Benchmarking is benchmark-first, not implementation-first.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "ordering",
+          "value": "benchmark-first",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s17_e2",
+      "branch": "benchmark",
+      "text": "Comparisons use the same scenarios across systems.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "scenarios",
+          "value": "same scenarios across systems",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s17_e3",
+      "branch": "benchmark",
+      "text": "Comparisons use the same seeds across systems.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "seeds",
+          "value": "same seeds across systems",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s17_e4",
+      "branch": "benchmark",
+      "text": "Comparisons use equal budget where possible.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "budget",
+          "value": "equal budget",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s17_q1",
+      "text": "What ordering principle is used?",
+      "kind": "value",
+      "target_branch": "benchmark",
+      "subject": "benchmark",
+      "attribute": "ordering",
+      "expected": "benchmark-first",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s17_q2",
+      "text": "What scenario rule is used?",
+      "kind": "value",
+      "target_branch": "benchmark",
+      "subject": "benchmark",
+      "attribute": "scenarios",
+      "expected": "same scenarios across systems",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s17_q3",
+      "text": "What budget rule is used?",
+      "kind": "value",
+      "target_branch": "benchmark",
+      "subject": "benchmark",
+      "attribute": "budget",
+      "expected": "equal budget",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

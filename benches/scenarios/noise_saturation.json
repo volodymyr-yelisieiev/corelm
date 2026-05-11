@@ -1,0 +1,922 @@
+{
+  "name": "noise_saturation",
+  "description": "Two facts are embedded in a very long wall of noise.",
+  "tags": [
+    "noise",
+    "retention"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s13_e1",
+      "branch": "core",
+      "text": "The benchmark principle is equal budget comparisons.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "principle",
+          "value": "equal budget comparisons",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_1",
+      "branch": "misc",
+      "text": "Noise note 1: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_2",
+      "branch": "ops",
+      "text": "Noise note 2: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_3",
+      "branch": "draft",
+      "text": "Noise note 3: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 4,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_4",
+      "branch": "misc",
+      "text": "Noise note 4: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 5,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_5",
+      "branch": "ops",
+      "text": "Noise note 5: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 6,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_6",
+      "branch": "draft",
+      "text": "Noise note 6: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 7,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_7",
+      "branch": "misc",
+      "text": "Noise note 7: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 8,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_8",
+      "branch": "ops",
+      "text": "Noise note 8: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 9,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_9",
+      "branch": "draft",
+      "text": "Noise note 9: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 10,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_10",
+      "branch": "misc",
+      "text": "Noise note 10: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 11,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_11",
+      "branch": "ops",
+      "text": "Noise note 11: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 12,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_12",
+      "branch": "draft",
+      "text": "Noise note 12: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 13,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_13",
+      "branch": "misc",
+      "text": "Noise note 13: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 14,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_14",
+      "branch": "ops",
+      "text": "Noise note 14: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 15,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_15",
+      "branch": "draft",
+      "text": "Noise note 15: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 16,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_16",
+      "branch": "misc",
+      "text": "Noise note 16: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 17,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_17",
+      "branch": "ops",
+      "text": "Noise note 17: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 18,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_18",
+      "branch": "draft",
+      "text": "Noise note 18: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 19,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_19",
+      "branch": "misc",
+      "text": "Noise note 19: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 20,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_20",
+      "branch": "ops",
+      "text": "Noise note 20: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 21,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_21",
+      "branch": "draft",
+      "text": "Noise note 21: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 22,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_22",
+      "branch": "misc",
+      "text": "Noise note 22: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 23,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_23",
+      "branch": "ops",
+      "text": "Noise note 23: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 24,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_24",
+      "branch": "draft",
+      "text": "Noise note 24: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 25,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_25",
+      "branch": "misc",
+      "text": "Noise note 25: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 26,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_26",
+      "branch": "ops",
+      "text": "Noise note 26: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 27,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_27",
+      "branch": "draft",
+      "text": "Noise note 27: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 28,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_28",
+      "branch": "misc",
+      "text": "Noise note 28: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 29,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_29",
+      "branch": "ops",
+      "text": "Noise note 29: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 30,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_30",
+      "branch": "draft",
+      "text": "Noise note 30: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 31,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_31",
+      "branch": "misc",
+      "text": "Noise note 31: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 32,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_32",
+      "branch": "ops",
+      "text": "Noise note 32: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 33,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_33",
+      "branch": "draft",
+      "text": "Noise note 33: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 34,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_34",
+      "branch": "misc",
+      "text": "Noise note 34: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 35,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_35",
+      "branch": "ops",
+      "text": "Noise note 35: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 36,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_36",
+      "branch": "draft",
+      "text": "Noise note 36: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 37,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_37",
+      "branch": "misc",
+      "text": "Noise note 37: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 38,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_38",
+      "branch": "ops",
+      "text": "Noise note 38: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 39,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_39",
+      "branch": "draft",
+      "text": "Noise note 39: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 40,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_40",
+      "branch": "misc",
+      "text": "Noise note 40: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 41,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_41",
+      "branch": "ops",
+      "text": "Noise note 41: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 42,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_42",
+      "branch": "draft",
+      "text": "Noise note 42: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 43,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_43",
+      "branch": "misc",
+      "text": "Noise note 43: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 44,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_44",
+      "branch": "ops",
+      "text": "Noise note 44: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 45,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_45",
+      "branch": "draft",
+      "text": "Noise note 45: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 46,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_46",
+      "branch": "misc",
+      "text": "Noise note 46: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 47,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_47",
+      "branch": "ops",
+      "text": "Noise note 47: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 48,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_48",
+      "branch": "draft",
+      "text": "Noise note 48: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 49,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_49",
+      "branch": "misc",
+      "text": "Noise note 49: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 50,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n1_50",
+      "branch": "ops",
+      "text": "Noise note 50: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 51,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_e2",
+      "branch": "core",
+      "text": "The benchmark uses the same seeds across systems.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "seeds",
+          "value": "same seeds across systems",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 60,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_1",
+      "branch": "misc",
+      "text": "Noise note 1: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 61,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_2",
+      "branch": "draft",
+      "text": "Noise note 2: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 62,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_3",
+      "branch": "ops",
+      "text": "Noise note 3: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 63,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_4",
+      "branch": "misc",
+      "text": "Noise note 4: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 64,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_5",
+      "branch": "draft",
+      "text": "Noise note 5: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 65,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_6",
+      "branch": "ops",
+      "text": "Noise note 6: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 66,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_7",
+      "branch": "misc",
+      "text": "Noise note 7: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 67,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_8",
+      "branch": "draft",
+      "text": "Noise note 8: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 68,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_9",
+      "branch": "ops",
+      "text": "Noise note 9: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 69,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_10",
+      "branch": "misc",
+      "text": "Noise note 10: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 70,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_11",
+      "branch": "draft",
+      "text": "Noise note 11: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 71,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_12",
+      "branch": "ops",
+      "text": "Noise note 12: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 72,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_13",
+      "branch": "misc",
+      "text": "Noise note 13: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 73,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_14",
+      "branch": "draft",
+      "text": "Noise note 14: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 74,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_15",
+      "branch": "ops",
+      "text": "Noise note 15: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 75,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_16",
+      "branch": "misc",
+      "text": "Noise note 16: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 76,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_17",
+      "branch": "draft",
+      "text": "Noise note 17: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 77,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_18",
+      "branch": "ops",
+      "text": "Noise note 18: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 78,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_19",
+      "branch": "misc",
+      "text": "Noise note 19: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 79,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_20",
+      "branch": "draft",
+      "text": "Noise note 20: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 80,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_21",
+      "branch": "ops",
+      "text": "Noise note 21: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 81,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_22",
+      "branch": "misc",
+      "text": "Noise note 22: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 82,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_23",
+      "branch": "draft",
+      "text": "Noise note 23: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 83,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_24",
+      "branch": "ops",
+      "text": "Noise note 24: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 84,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_25",
+      "branch": "misc",
+      "text": "Noise note 25: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 85,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_26",
+      "branch": "draft",
+      "text": "Noise note 26: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 86,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_27",
+      "branch": "ops",
+      "text": "Noise note 27: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 87,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_28",
+      "branch": "misc",
+      "text": "Noise note 28: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 88,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_29",
+      "branch": "draft",
+      "text": "Noise note 29: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 89,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_30",
+      "branch": "ops",
+      "text": "Noise note 30: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 90,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_31",
+      "branch": "misc",
+      "text": "Noise note 31: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 91,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_32",
+      "branch": "draft",
+      "text": "Noise note 32: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 92,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_33",
+      "branch": "ops",
+      "text": "Noise note 33: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 93,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_34",
+      "branch": "misc",
+      "text": "Noise note 34: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 94,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_35",
+      "branch": "draft",
+      "text": "Noise note 35: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 95,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_36",
+      "branch": "ops",
+      "text": "Noise note 36: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 96,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_37",
+      "branch": "misc",
+      "text": "Noise note 37: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 97,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_38",
+      "branch": "draft",
+      "text": "Noise note 38: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 98,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_39",
+      "branch": "ops",
+      "text": "Noise note 39: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 99,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_40",
+      "branch": "misc",
+      "text": "Noise note 40: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 100,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_41",
+      "branch": "draft",
+      "text": "Noise note 41: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 101,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_42",
+      "branch": "ops",
+      "text": "Noise note 42: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 102,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_43",
+      "branch": "misc",
+      "text": "Noise note 43: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 103,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_44",
+      "branch": "draft",
+      "text": "Noise note 44: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 104,
+      "meta": {}
+    },
+    {
+      "event_id": "s13_n2_45",
+      "branch": "ops",
+      "text": "Noise note 45: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 105,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s13_q1",
+      "text": "What benchmark principle is used?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "benchmark",
+      "attribute": "principle",
+      "expected": "equal budget comparisons",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s13_q2",
+      "text": "What seed rule is used?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "benchmark",
+      "attribute": "seeds",
+      "expected": "same seeds across systems",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

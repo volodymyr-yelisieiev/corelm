@@ -1,0 +1,72 @@
+{
+  "name": "provenance_trace",
+  "description": "The system should provide source-linked answers for durable facts.",
+  "tags": [
+    "provenance"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s11_e1",
+      "branch": "core",
+      "text": "The canonical pipeline is E -> N -> T -> Q -> K.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "pipeline",
+          "attribute": "steps",
+          "value": "E -> N -> T -> Q -> K",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s11_e2",
+      "branch": "core",
+      "text": "The ledger is append-only.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "ledger",
+          "attribute": "property",
+          "value": "append-only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s11_q1",
+      "text": "Where did the pipeline statement come from?",
+      "kind": "provenance",
+      "target_branch": "core",
+      "subject": "pipeline",
+      "attribute": "steps",
+      "expected": null,
+      "expected_contains": [
+        "s11_e1",
+        "canonical pipeline"
+      ],
+      "meta": {}
+    },
+    {
+      "query_id": "s11_q2",
+      "text": "Where did the ledger property come from?",
+      "kind": "provenance",
+      "target_branch": "core",
+      "subject": "ledger",
+      "attribute": "property",
+      "expected": null,
+      "expected_contains": [
+        "s11_e2",
+        "append-only"
+      ],
+      "meta": {}
+    }
+  ]
+}

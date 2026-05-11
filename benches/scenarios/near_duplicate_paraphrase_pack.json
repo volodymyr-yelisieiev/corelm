@@ -1,0 +1,72 @@
+{
+  "name": "near_duplicate_paraphrase_pack",
+  "description": "Minor textual differences should collapse to one canonical durable value.",
+  "tags": [
+    "dedupe",
+    "ledger"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s16_e1",
+      "branch": "core",
+      "text": "The ledger is append-only.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "ledger",
+          "attribute": "property",
+          "value": "append-only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s16_e2",
+      "branch": "core",
+      "text": "The ledger is append only.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "ledger",
+          "attribute": "property",
+          "value": "append-only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s16_e3",
+      "branch": "core",
+      "text": "Ledger writes are append-only and never mutate prior history.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "ledger",
+          "attribute": "property",
+          "value": "append-only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s16_q1",
+      "text": "What is the ledger property?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "ledger",
+      "attribute": "property",
+      "expected": "append-only",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

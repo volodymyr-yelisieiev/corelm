@@ -1,0 +1,36 @@
+{
+  "connectors": [
+    {
+      "id": "programming-packet",
+      "name": "Programming Agent Packet",
+      "direction": "outbound",
+      "type": "programming_agent_packet",
+      "config": {
+        "mock": true,
+        "packet_type": "engineering_task_packet"
+      },
+      "secret_refs": []
+    },
+    {
+      "id": "rest-mock",
+      "name": "Mock REST Delivery",
+      "direction": "outbound",
+      "type": "generic_http_rest",
+      "config": {
+        "mock": true,
+        "url": "mock://rest-target"
+      },
+      "secret_refs": []
+    },
+    {
+      "id": "file-export",
+      "name": "Local File Export",
+      "direction": "outbound",
+      "type": "file_export",
+      "config": {
+        "directory": "exports"
+      },
+      "secret_refs": []
+    }
+  ]
+}

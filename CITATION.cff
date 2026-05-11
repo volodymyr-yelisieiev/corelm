@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "Core LM Full-Spectrum Kit"
+message: "If you use this bundle, cite the repository snapshot and manuscript."
+type: software
+authors:
+  - family-names: "Project"
+    given-names: "Core LM"
+version: 1.3.0
+date-released: 2026-04-02
+repository-code: "LOCAL-ARTIFACT"

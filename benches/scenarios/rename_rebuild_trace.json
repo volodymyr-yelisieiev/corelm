@@ -1,0 +1,94 @@
+{
+  "name": "rename_rebuild_trace",
+  "description": "Real planning trace about renaming and rebuild strategy.",
+  "tags": [
+    "project",
+    "ops"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s6_e1",
+      "branch": "project",
+      "text": "The project was renamed from Lucid Mind to Core LM.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "project",
+          "attribute": "name",
+          "value": "Core LM",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s6_e2",
+      "branch": "project",
+      "text": "The repository should be rebuilt sequentially.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "repo",
+          "attribute": "strategy",
+          "value": "sequential rebuild",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s6_e3",
+      "branch": "project",
+      "text": "Validation starts with vacuum-first benchmarking before broader integration.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "validation",
+          "attribute": "strategy",
+          "value": "vacuum-first benchmark",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s6_q1",
+      "text": "What is the project name?",
+      "kind": "value",
+      "target_branch": "project",
+      "subject": "project",
+      "attribute": "name",
+      "expected": "Core LM",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s6_q2",
+      "text": "What repository strategy was selected?",
+      "kind": "value",
+      "target_branch": "project",
+      "subject": "repo",
+      "attribute": "strategy",
+      "expected": "sequential rebuild",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s6_q3",
+      "text": "What validation strategy was selected?",
+      "kind": "value",
+      "target_branch": "project",
+      "subject": "validation",
+      "attribute": "strategy",
+      "expected": "vacuum-first benchmark",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

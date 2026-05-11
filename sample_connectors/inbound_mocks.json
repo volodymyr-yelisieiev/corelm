@@ -1,0 +1,38 @@
+{
+  "connectors": [
+    {
+      "id": "mock-openai",
+      "name": "Mock OpenAI-Compatible LLM",
+      "direction": "inbound",
+      "type": "openai_compatible_llm",
+      "config": {
+        "mock": true,
+        "model": "mock-gpt",
+        "base_url": "https://api.openai.com/v1"
+      },
+      "secret_refs": ["OPENAI_API_KEY"]
+    },
+    {
+      "id": "mock-ollama",
+      "name": "Mock Ollama Local Model",
+      "direction": "inbound",
+      "type": "ollama_local_model",
+      "config": {
+        "mock": true,
+        "model": "llama3.1",
+        "base_url": "http://127.0.0.1:11434"
+      },
+      "secret_refs": []
+    },
+    {
+      "id": "manual-text",
+      "name": "Manual Text",
+      "direction": "inbound",
+      "type": "manual_text",
+      "config": {
+        "trust_level": "medium"
+      },
+      "secret_refs": []
+    }
+  ]
+}

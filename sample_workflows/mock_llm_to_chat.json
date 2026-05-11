@@ -1,0 +1,45 @@
+{
+  "id": "mock-llm-to-chat",
+  "name": "Mock LLM To Core Chat",
+  "description": "OpenAI-compatible mock connector into Core LM and the global chat bus.",
+  "schedule": {
+    "enabled": false,
+    "cron": ""
+  },
+  "nodes": [
+    {
+      "id": "llm",
+      "type": "openai_compatible_llm",
+      "position": { "x": 48, "y": 120 },
+      "config": {
+        "mock": true,
+        "prompt": "workflow.kind = deterministic mock LLM ingress"
+      }
+    },
+    {
+      "id": "extract",
+      "type": "key_value_extraction",
+      "position": { "x": 292, "y": 120 },
+      "config": {}
+    },
+    {
+      "id": "core",
+      "type": "core_lm",
+      "position": { "x": 536, "y": 120 },
+      "config": {
+        "format": "markdown"
+      }
+    },
+    {
+      "id": "chat",
+      "type": "chat",
+      "position": { "x": 780, "y": 120 },
+      "config": {}
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "llm", "target": "extract" },
+    { "id": "e2", "source": "extract", "target": "core" },
+    { "id": "e3", "source": "core", "target": "chat" }
+  ]
+}

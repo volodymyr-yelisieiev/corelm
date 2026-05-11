@@ -1,0 +1,94 @@
+{
+  "name": "state_space_foundation",
+  "description": "Direct retrieval of formal state-space definitions from the source specification.",
+  "tags": [
+    "spec",
+    "math"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s1_e1",
+      "branch": "core",
+      "text": "Core LM uses the state equation S_{t+1} = F(S_t, U_t).",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "state",
+          "attribute": "equation",
+          "value": "S_{t+1} = F(S_t, U_t)",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s1_e2",
+      "branch": "core",
+      "text": "The observation equation is y_t = H(S_t).",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "observation",
+          "attribute": "equation",
+          "value": "y_t = H(S_t)",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s1_e3",
+      "branch": "core",
+      "text": "The admissible state space is X subset of R^n.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "state",
+          "attribute": "space",
+          "value": "X subset of R^n",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s1_q1",
+      "text": "What is the state equation?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "state",
+      "attribute": "equation",
+      "expected": "S_{t+1} = F(S_t, U_t)",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s1_q2",
+      "text": "What is the observation equation?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "observation",
+      "attribute": "equation",
+      "expected": "y_t = H(S_t)",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s1_q3",
+      "text": "What is the admissible state space?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "state",
+      "attribute": "space",
+      "expected": "X subset of R^n",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

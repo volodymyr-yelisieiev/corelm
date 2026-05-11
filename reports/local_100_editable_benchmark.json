@@ -1,0 +1,3280 @@
+{
+  "scenario_rows": [
+    {
+      "description": "Several branches share overlapping words such as state and status.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s14_q1"
+            },
+            {
+              "answer": "amber",
+              "correct": true,
+              "query_id": "s14_q2"
+            },
+            {
+              "answer": "release-ready",
+              "correct": true,
+              "query_id": "s14_q3"
+            },
+            {
+              "answer": "mandatory",
+              "correct": true,
+              "query_id": "s14_q4"
+            }
+          ],
+          "approx_memory_words": 36,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 7,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "adversarial_mixed_branch",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s14_q1"
+            },
+            {
+              "answer": "amber",
+              "correct": true,
+              "query_id": "s14_q2"
+            },
+            {
+              "answer": "release-ready",
+              "correct": true,
+              "query_id": "s14_q3"
+            },
+            {
+              "answer": "mandatory",
+              "correct": true,
+              "query_id": "s14_q4"
+            }
+          ],
+          "approx_memory_words": 36,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 7,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "adversarial_mixed_branch",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s14_q1"
+            },
+            {
+              "answer": "amber",
+              "correct": true,
+              "query_id": "s14_q2"
+            },
+            {
+              "answer": "release-ready",
+              "correct": true,
+              "query_id": "s14_q3"
+            },
+            {
+              "answer": "mandatory",
+              "correct": true,
+              "query_id": "s14_q4"
+            }
+          ],
+          "approx_memory_words": 7,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 7,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "adversarial_mixed_branch",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s14_q1"
+            },
+            {
+              "answer": "green",
+              "correct": false,
+              "query_id": "s14_q2"
+            },
+            {
+              "answer": "draft-ready",
+              "correct": false,
+              "query_id": "s14_q3"
+            },
+            {
+              "answer": "mandatory",
+              "correct": true,
+              "query_id": "s14_q4"
+            }
+          ],
+          "approx_memory_words": 36,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 7,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "adversarial_mixed_branch",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s14_q1"
+            },
+            {
+              "answer": "amber",
+              "correct": true,
+              "query_id": "s14_q2"
+            },
+            {
+              "answer": "release-ready",
+              "correct": true,
+              "query_id": "s14_q3"
+            },
+            {
+              "answer": "mandatory",
+              "correct": true,
+              "query_id": "s14_q4"
+            }
+          ],
+          "approx_memory_words": 36,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 7,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.44029292464256287,
+          "mean_state_norm": 0.3556307057539622,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "adversarial_mixed_branch",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s14_q1"
+            },
+            {
+              "answer": "amber",
+              "correct": true,
+              "query_id": "s14_q2"
+            },
+            {
+              "answer": "release-ready",
+              "correct": true,
+              "query_id": "s14_q3"
+            },
+            {
+              "answer": "mandatory",
+              "correct": true,
+              "query_id": "s14_q4"
+            }
+          ],
+          "approx_memory_words": 36,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 7,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.44029292464256287,
+          "mean_state_norm": 0.3556307057539622,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "adversarial_mixed_branch",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "adversarial_mixed_branch"
+    },
+    {
+      "description": "Project benchmark policy trace.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "benchmark-first",
+              "correct": true,
+              "query_id": "s17_q1"
+            },
+            {
+              "answer": "same scenarios across systems",
+              "correct": true,
+              "query_id": "s17_q2"
+            },
+            {
+              "answer": "equal budget",
+              "correct": true,
+              "query_id": "s17_q3"
+            }
+          ],
+          "approx_memory_words": 25,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "benchmark_principles",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "benchmark-first",
+              "correct": true,
+              "query_id": "s17_q1"
+            },
+            {
+              "answer": "same scenarios across systems",
+              "correct": true,
+              "query_id": "s17_q2"
+            },
+            {
+              "answer": "equal budget",
+              "correct": true,
+              "query_id": "s17_q3"
+            }
+          ],
+          "approx_memory_words": 25,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "benchmark_principles",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "benchmark-first",
+              "correct": true,
+              "query_id": "s17_q1"
+            },
+            {
+              "answer": "same scenarios across systems",
+              "correct": true,
+              "query_id": "s17_q2"
+            },
+            {
+              "answer": "equal budget",
+              "correct": true,
+              "query_id": "s17_q3"
+            }
+          ],
+          "approx_memory_words": 11,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "benchmark_principles",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "benchmark-first",
+              "correct": true,
+              "query_id": "s17_q1"
+            },
+            {
+              "answer": "same scenarios across systems",
+              "correct": true,
+              "query_id": "s17_q2"
+            },
+            {
+              "answer": "equal budget",
+              "correct": true,
+              "query_id": "s17_q3"
+            }
+          ],
+          "approx_memory_words": 25,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "benchmark_principles",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "benchmark-first",
+              "correct": true,
+              "query_id": "s17_q1"
+            },
+            {
+              "answer": "same scenarios across systems",
+              "correct": true,
+              "query_id": "s17_q2"
+            },
+            {
+              "answer": "equal budget",
+              "correct": true,
+              "query_id": "s17_q3"
+            }
+          ],
+          "approx_memory_words": 25,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3487071394920349,
+          "mean_state_norm": 0.2707839496433735,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "benchmark_principles",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "benchmark-first",
+              "correct": true,
+              "query_id": "s17_q1"
+            },
+            {
+              "answer": "same scenarios across systems",
+              "correct": true,
+              "query_id": "s17_q2"
+            },
+            {
+              "answer": "equal budget",
+              "correct": true,
+              "query_id": "s17_q3"
+            }
+          ],
+          "approx_memory_words": 25,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3487071394920349,
+          "mean_state_norm": 0.2707839496433735,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "benchmark_principles",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "benchmark_principles"
+    },
+    {
+      "description": "Mixed branches should not contaminate one another.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s9_q1"
+            },
+            {
+              "answer": "RunPod",
+              "correct": true,
+              "query_id": "s9_q2"
+            },
+            {
+              "answer": "arXiv",
+              "correct": true,
+              "query_id": "s9_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "branch_isolation_core_infra_publication",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s9_q1"
+            },
+            {
+              "answer": "RunPod",
+              "correct": true,
+              "query_id": "s9_q2"
+            },
+            {
+              "answer": "arXiv",
+              "correct": true,
+              "query_id": "s9_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "branch_isolation_core_infra_publication",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s9_q1"
+            },
+            {
+              "answer": "RunPod",
+              "correct": true,
+              "query_id": "s9_q2"
+            },
+            {
+              "answer": "arXiv",
+              "correct": true,
+              "query_id": "s9_q3"
+            }
+          ],
+          "approx_memory_words": 16,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "branch_isolation_core_infra_publication",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s9_q1"
+            },
+            {
+              "answer": "RunPod",
+              "correct": true,
+              "query_id": "s9_q2"
+            },
+            {
+              "answer": "arXiv",
+              "correct": true,
+              "query_id": "s9_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "branch_isolation_core_infra_publication",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s9_q1"
+            },
+            {
+              "answer": "RunPod",
+              "correct": true,
+              "query_id": "s9_q2"
+            },
+            {
+              "answer": "arXiv",
+              "correct": true,
+              "query_id": "s9_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3914200961589813,
+          "mean_state_norm": 0.31612858474254607,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "branch_isolation_core_infra_publication",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s9_q1"
+            },
+            {
+              "answer": "RunPod",
+              "correct": true,
+              "query_id": "s9_q2"
+            },
+            {
+              "answer": "arXiv",
+              "correct": true,
+              "query_id": "s9_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3914200961589813,
+          "mean_state_norm": 0.31612858474254607,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "branch_isolation_core_infra_publication",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "branch_isolation_core_infra_publication"
+    },
+    {
+      "description": "Core doctrine trace with project-specific statements used throughout planning.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "E -> N -> T -> Q -> K",
+              "correct": true,
+              "query_id": "s4_q1"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s4_q2"
+            },
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s4_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "canonical_pipeline",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "E -> N -> T -> Q -> K",
+              "correct": true,
+              "query_id": "s4_q1"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s4_q2"
+            },
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s4_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "canonical_pipeline",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "E -> N -> T -> Q -> K",
+              "correct": true,
+              "query_id": "s4_q1"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s4_q2"
+            },
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s4_q3"
+            }
+          ],
+          "approx_memory_words": 17,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "canonical_pipeline",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "E -> N -> T -> Q -> K",
+              "correct": true,
+              "query_id": "s4_q1"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s4_q2"
+            },
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s4_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "canonical_pipeline",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "E -> N -> T -> Q -> K",
+              "correct": true,
+              "query_id": "s4_q1"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s4_q2"
+            },
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s4_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.36814868450164795,
+          "mean_state_norm": 0.2898036949336529,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "canonical_pipeline",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "E -> N -> T -> Q -> K",
+              "correct": true,
+              "query_id": "s4_q1"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s4_q2"
+            },
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s4_q3"
+            }
+          ],
+          "approx_memory_words": 38,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.36814868450164795,
+          "mean_state_norm": 0.2898036949336529,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "canonical_pipeline",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "canonical_pipeline"
+    },
+    {
+      "description": "Multiple sequential corrections should preserve the latest truth state.",
+      "results": [
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s15_q2"
+            }
+          ],
+          "approx_memory_words": 22,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "chained_corrections",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s15_q2"
+            }
+          ],
+          "approx_memory_words": 22,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "chained_corrections",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s15_q2"
+            }
+          ],
+          "approx_memory_words": 9,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "chained_corrections",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s15_q2"
+            }
+          ],
+          "approx_memory_words": 22,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "chained_corrections",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q1"
+            },
+            {
+              "answer": "mixed traces -> real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q2"
+            }
+          ],
+          "approx_memory_words": 22,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3564477860927582,
+          "mean_state_norm": 0.2745835880438487,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "chained_corrections",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q1"
+            },
+            {
+              "answer": "mixed traces -> real traces plus synthetic controls",
+              "correct": true,
+              "query_id": "s15_q2"
+            }
+          ],
+          "approx_memory_words": 22,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3564477860927582,
+          "mean_state_norm": 0.2745835880438487,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "chained_corrections",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "chained_corrections"
+    },
+    {
+      "description": "A corrected fact should supersede the old value and preserve lineage.",
+      "results": [
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s7_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s7_q2"
+            }
+          ],
+          "approx_memory_words": 114,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_api_port",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s7_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s7_q2"
+            }
+          ],
+          "approx_memory_words": 191,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_api_port",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s7_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s7_q2"
+            }
+          ],
+          "approx_memory_words": 2,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_api_port",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "8080",
+              "correct": false,
+              "query_id": "s7_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s7_q2"
+            }
+          ],
+          "approx_memory_words": 191,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_api_port",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s7_q1"
+            },
+            {
+              "answer": "8080 -> 9090",
+              "correct": true,
+              "query_id": "s7_q2"
+            }
+          ],
+          "approx_memory_words": 191,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.9426173567771912,
+          "mean_state_norm": 0.6121762543916702,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "contradiction_api_port",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "9090",
+              "correct": true,
+              "query_id": "s7_q1"
+            },
+            {
+              "answer": "8080 -> 9090",
+              "correct": true,
+              "query_id": "s7_q2"
+            }
+          ],
+          "approx_memory_words": 191,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.9426173567771912,
+          "mean_state_norm": 0.6121762543916702,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "contradiction_api_port",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "contradiction_api_port"
+    },
+    {
+      "description": "Project rename with direct correction semantics.",
+      "results": [
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s8_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s8_q2"
+            }
+          ],
+          "approx_memory_words": 16,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_rename",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s8_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s8_q2"
+            }
+          ],
+          "approx_memory_words": 16,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_rename",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s8_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s8_q2"
+            }
+          ],
+          "approx_memory_words": 4,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_rename",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s8_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s8_q2"
+            }
+          ],
+          "approx_memory_words": 16,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "contradiction_rename",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s8_q1"
+            },
+            {
+              "answer": "Lucid Mind -> Core LM",
+              "correct": true,
+              "query_id": "s8_q2"
+            }
+          ],
+          "approx_memory_words": 16,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.2826114892959595,
+          "mean_state_norm": 0.24130576103925705,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "contradiction_rename",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s8_q1"
+            },
+            {
+              "answer": "Lucid Mind -> Core LM",
+              "correct": true,
+              "query_id": "s8_q2"
+            }
+          ],
+          "approx_memory_words": 16,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.2826114892959595,
+          "mean_state_norm": 0.24130576103925705,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "contradiction_rename",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "contradiction_rename"
+    },
+    {
+      "description": "A fact must survive a long noisy middle segment.",
+      "results": [
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s5_q1"
+            }
+          ],
+          "approx_memory_words": 120,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 0,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "delayed_recall_noise",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "AURORA-17",
+              "correct": true,
+              "query_id": "s5_q1"
+            }
+          ],
+          "approx_memory_words": 484,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "delayed_recall_noise",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "AURORA-17",
+              "correct": true,
+              "query_id": "s5_q1"
+            }
+          ],
+          "approx_memory_words": 1,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "delayed_recall_noise",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "AURORA-17",
+              "correct": true,
+              "query_id": "s5_q1"
+            }
+          ],
+          "approx_memory_words": 484,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "delayed_recall_noise",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "AURORA-17",
+              "correct": true,
+              "query_id": "s5_q1"
+            }
+          ],
+          "approx_memory_words": 484,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 3.112389326095581,
+          "mean_state_norm": 1.3931781246167858,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "delayed_recall_noise",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "AURORA-17",
+              "correct": true,
+              "query_id": "s5_q1"
+            }
+          ],
+          "approx_memory_words": 484,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 3.112389326095581,
+          "mean_state_norm": 1.3931781246167858,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "delayed_recall_noise",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "delayed_recall_noise"
+    },
+    {
+      "description": "Long mixed trace touching all three formal documents plus benchmark policy.",
+      "results": [
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s18_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s18_q2"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s18_q3"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s18_q4"
+            }
+          ],
+          "approx_memory_words": 120,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 0,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "full_spec_trace",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s18_q1"
+            },
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s18_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s18_q3"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s18_q4"
+            }
+          ],
+          "approx_memory_words": 343,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "full_spec_trace",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s18_q1"
+            },
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s18_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s18_q3"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s18_q4"
+            }
+          ],
+          "approx_memory_words": 21,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "full_spec_trace",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s18_q1"
+            },
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s18_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s18_q3"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s18_q4"
+            }
+          ],
+          "approx_memory_words": 343,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "full_spec_trace",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s18_q1"
+            },
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s18_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s18_q3"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s18_q4"
+            }
+          ],
+          "approx_memory_words": 343,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 1.7763004302978516,
+          "mean_state_norm": 0.9100372011462847,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "full_spec_trace",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s18_q1"
+            },
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s18_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s18_q3"
+            },
+            {
+              "answer": "core state and ledger",
+              "correct": true,
+              "query_id": "s18_q4"
+            }
+          ],
+          "approx_memory_words": 343,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 1.7763004302978516,
+          "mean_state_norm": 0.9100372011462847,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "full_spec_trace",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "full_spec_trace"
+    },
+    {
+      "description": "Long planning trace with late recall requirements.",
+      "results": [
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s12_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s12_q2"
+            }
+          ],
+          "approx_memory_words": 120,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 0,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "long_horizon_publication_plan",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "reproducible zip archive",
+              "correct": true,
+              "query_id": "s12_q1"
+            },
+            {
+              "answer": "claim discipline notes",
+              "correct": true,
+              "query_id": "s12_q2"
+            }
+          ],
+          "approx_memory_words": 394,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "long_horizon_publication_plan",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "reproducible zip archive",
+              "correct": true,
+              "query_id": "s12_q1"
+            },
+            {
+              "answer": "claim discipline notes",
+              "correct": true,
+              "query_id": "s12_q2"
+            }
+          ],
+          "approx_memory_words": 8,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "long_horizon_publication_plan",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "reproducible zip archive",
+              "correct": true,
+              "query_id": "s12_q1"
+            },
+            {
+              "answer": "claim discipline notes",
+              "correct": true,
+              "query_id": "s12_q2"
+            }
+          ],
+          "approx_memory_words": 394,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "long_horizon_publication_plan",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "reproducible zip archive",
+              "correct": true,
+              "query_id": "s12_q1"
+            },
+            {
+              "answer": "claim discipline notes",
+              "correct": true,
+              "query_id": "s12_q2"
+            }
+          ],
+          "approx_memory_words": 394,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 2.093785047531128,
+          "mean_state_norm": 1.0618408977985383,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "long_horizon_publication_plan",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "reproducible zip archive",
+              "correct": true,
+              "query_id": "s12_q1"
+            },
+            {
+              "answer": "claim discipline notes",
+              "correct": true,
+              "query_id": "s12_q2"
+            }
+          ],
+          "approx_memory_words": 394,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 5,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 2.093785047531128,
+          "mean_state_norm": 1.0618408977985383,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "long_horizon_publication_plan",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "long_horizon_publication_plan"
+    },
+    {
+      "description": "Minor textual differences should collapse to one canonical durable value.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "append-only",
+              "correct": true,
+              "query_id": "s16_q1"
+            }
+          ],
+          "approx_memory_words": 18,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "near_duplicate_paraphrase_pack",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "append-only",
+              "correct": true,
+              "query_id": "s16_q1"
+            }
+          ],
+          "approx_memory_words": 18,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "near_duplicate_paraphrase_pack",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "append-only",
+              "correct": true,
+              "query_id": "s16_q1"
+            }
+          ],
+          "approx_memory_words": 3,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "near_duplicate_paraphrase_pack",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "append-only",
+              "correct": true,
+              "query_id": "s16_q1"
+            }
+          ],
+          "approx_memory_words": 18,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "near_duplicate_paraphrase_pack",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "append-only",
+              "correct": true,
+              "query_id": "s16_q1"
+            }
+          ],
+          "approx_memory_words": 18,
+          "deduped_events": 2,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3531533181667328,
+          "mean_state_norm": 0.2799844245115916,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "near_duplicate_paraphrase_pack",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "append-only",
+              "correct": true,
+              "query_id": "s16_q1"
+            }
+          ],
+          "approx_memory_words": 18,
+          "deduped_events": 2,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3531533181667328,
+          "mean_state_norm": 0.2799844245115916,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "near_duplicate_paraphrase_pack",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "near_duplicate_paraphrase_pack"
+    },
+    {
+      "description": "Two facts are embedded in a very long wall of noise.",
+      "results": [
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s13_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s13_q2"
+            }
+          ],
+          "approx_memory_words": 120,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 0,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "noise_saturation",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 0.5,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s13_q1"
+            },
+            {
+              "answer": "same seeds across systems",
+              "correct": true,
+              "query_id": "s13_q2"
+            }
+          ],
+          "approx_memory_words": 572,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "noise_saturation",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "equal budget comparisons",
+              "correct": true,
+              "query_id": "s13_q1"
+            },
+            {
+              "answer": "same seeds across systems",
+              "correct": true,
+              "query_id": "s13_q2"
+            }
+          ],
+          "approx_memory_words": 7,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "noise_saturation",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "equal budget comparisons",
+              "correct": true,
+              "query_id": "s13_q1"
+            },
+            {
+              "answer": "same seeds across systems",
+              "correct": true,
+              "query_id": "s13_q2"
+            }
+          ],
+          "approx_memory_words": 1155,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "noise_saturation",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "equal budget comparisons",
+              "correct": true,
+              "query_id": "s13_q1"
+            },
+            {
+              "answer": "same seeds across systems",
+              "correct": true,
+              "query_id": "s13_q2"
+            }
+          ],
+          "approx_memory_words": 1155,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 9.35434627532959,
+          "mean_state_norm": 4.672182635855429,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "noise_saturation",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "equal budget comparisons",
+              "correct": true,
+              "query_id": "s13_q1"
+            },
+            {
+              "answer": "same seeds across systems",
+              "correct": true,
+              "query_id": "s13_q2"
+            }
+          ],
+          "approx_memory_words": 1155,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 9.35434627532959,
+          "mean_state_norm": 4.672182635855429,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "noise_saturation",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "noise_saturation"
+    },
+    {
+      "description": "Real trace from the orchestrator specification.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "softmax(W O_t + b)",
+              "correct": true,
+              "query_id": "s3_q1"
+            },
+            {
+              "answer": "sum_i w_i = 1",
+              "correct": true,
+              "query_id": "s3_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s3_q3"
+            }
+          ],
+          "approx_memory_words": 37,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "orchestrator_invariants",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "softmax(W O_t + b)",
+              "correct": true,
+              "query_id": "s3_q1"
+            },
+            {
+              "answer": "sum_i w_i = 1",
+              "correct": true,
+              "query_id": "s3_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s3_q3"
+            }
+          ],
+          "approx_memory_words": 37,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "orchestrator_invariants",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "softmax(W O_t + b)",
+              "correct": true,
+              "query_id": "s3_q1"
+            },
+            {
+              "answer": "sum_i w_i = 1",
+              "correct": true,
+              "query_id": "s3_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s3_q3"
+            }
+          ],
+          "approx_memory_words": 15,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "orchestrator_invariants",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "softmax(W O_t + b)",
+              "correct": true,
+              "query_id": "s3_q1"
+            },
+            {
+              "answer": "sum_i w_i = 1",
+              "correct": true,
+              "query_id": "s3_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s3_q3"
+            }
+          ],
+          "approx_memory_words": 37,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "orchestrator_invariants",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "softmax(W O_t + b)",
+              "correct": true,
+              "query_id": "s3_q1"
+            },
+            {
+              "answer": "sum_i w_i = 1",
+              "correct": true,
+              "query_id": "s3_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s3_q3"
+            }
+          ],
+          "approx_memory_words": 37,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.405175119638443,
+          "mean_state_norm": 0.31009669601917267,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "orchestrator_invariants",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "softmax(W O_t + b)",
+              "correct": true,
+              "query_id": "s3_q1"
+            },
+            {
+              "answer": "sum_i w_i = 1",
+              "correct": true,
+              "query_id": "s3_q2"
+            },
+            {
+              "answer": "||U_t|| <= M",
+              "correct": true,
+              "query_id": "s3_q3"
+            }
+          ],
+          "approx_memory_words": 37,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.405175119638443,
+          "mean_state_norm": 0.31009669601917267,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "orchestrator_invariants",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "orchestrator_invariants"
+    },
+    {
+      "description": "Real trace derived from the perturbation formalization.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s2_q1"
+            },
+            {
+              "answer": "stochastic perturbation",
+              "correct": true,
+              "query_id": "s2_q2"
+            },
+            {
+              "answer": "input-to-state stability (ISS)",
+              "correct": true,
+              "query_id": "s2_q3"
+            }
+          ],
+          "approx_memory_words": 44,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "perturbation_classes",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s2_q1"
+            },
+            {
+              "answer": "stochastic perturbation",
+              "correct": true,
+              "query_id": "s2_q2"
+            },
+            {
+              "answer": "input-to-state stability (ISS)",
+              "correct": true,
+              "query_id": "s2_q3"
+            }
+          ],
+          "approx_memory_words": 44,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "perturbation_classes",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s2_q1"
+            },
+            {
+              "answer": "stochastic perturbation",
+              "correct": true,
+              "query_id": "s2_q2"
+            },
+            {
+              "answer": "input-to-state stability (ISS)",
+              "correct": true,
+              "query_id": "s2_q3"
+            }
+          ],
+          "approx_memory_words": 10,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "perturbation_classes",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s2_q1"
+            },
+            {
+              "answer": "stochastic perturbation",
+              "correct": true,
+              "query_id": "s2_q2"
+            },
+            {
+              "answer": "input-to-state stability (ISS)",
+              "correct": true,
+              "query_id": "s2_q3"
+            }
+          ],
+          "approx_memory_words": 44,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "perturbation_classes",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s2_q1"
+            },
+            {
+              "answer": "stochastic perturbation",
+              "correct": true,
+              "query_id": "s2_q2"
+            },
+            {
+              "answer": "input-to-state stability (ISS)",
+              "correct": true,
+              "query_id": "s2_q3"
+            }
+          ],
+          "approx_memory_words": 44,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.42214685678482056,
+          "mean_state_norm": 0.3155190348625183,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "perturbation_classes",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "deterministic structured input",
+              "correct": true,
+              "query_id": "s2_q1"
+            },
+            {
+              "answer": "stochastic perturbation",
+              "correct": true,
+              "query_id": "s2_q2"
+            },
+            {
+              "answer": "input-to-state stability (ISS)",
+              "correct": true,
+              "query_id": "s2_q3"
+            }
+          ],
+          "approx_memory_words": 44,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.42214685678482056,
+          "mean_state_norm": 0.3155190348625183,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "perturbation_classes",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "perturbation_classes"
+    },
+    {
+      "description": "The system should provide source-linked answers for durable facts.",
+      "results": [
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q2"
+            }
+          ],
+          "approx_memory_words": 17,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "provenance_trace",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q2"
+            }
+          ],
+          "approx_memory_words": 17,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "provenance_trace",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q2"
+            }
+          ],
+          "approx_memory_words": 10,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "provenance_trace",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 0.0,
+          "answers": [
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q1"
+            },
+            {
+              "answer": "UNKNOWN",
+              "correct": false,
+              "query_id": "s11_q2"
+            }
+          ],
+          "approx_memory_words": 17,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": false,
+          "provenance_coverage": 0.0,
+          "scenario": "provenance_trace",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "s11_e1: The canonical pipeline is E -> N -> T -> Q -> K.",
+              "correct": true,
+              "query_id": "s11_q1"
+            },
+            {
+              "answer": "s11_e2: The ledger is append-only.",
+              "correct": true,
+              "query_id": "s11_q2"
+            }
+          ],
+          "approx_memory_words": 17,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.2760658860206604,
+          "mean_state_norm": 0.23803294450044632,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "provenance_trace",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "s11_e1: The canonical pipeline is E -> N -> T -> Q -> K.",
+              "correct": true,
+              "query_id": "s11_q1"
+            },
+            {
+              "answer": "s11_e2: The ledger is append-only.",
+              "correct": true,
+              "query_id": "s11_q2"
+            }
+          ],
+          "approx_memory_words": 17,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 2,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.2760658860206604,
+          "mean_state_norm": 0.23803294450044632,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "provenance_trace",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "provenance_trace"
+    },
+    {
+      "description": "Real planning trace about renaming and rebuild strategy.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s6_q1"
+            },
+            {
+              "answer": "sequential rebuild",
+              "correct": true,
+              "query_id": "s6_q2"
+            },
+            {
+              "answer": "vacuum-first benchmark",
+              "correct": true,
+              "query_id": "s6_q3"
+            }
+          ],
+          "approx_memory_words": 24,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "rename_rebuild_trace",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s6_q1"
+            },
+            {
+              "answer": "sequential rebuild",
+              "correct": true,
+              "query_id": "s6_q2"
+            },
+            {
+              "answer": "vacuum-first benchmark",
+              "correct": true,
+              "query_id": "s6_q3"
+            }
+          ],
+          "approx_memory_words": 24,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "rename_rebuild_trace",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s6_q1"
+            },
+            {
+              "answer": "sequential rebuild",
+              "correct": true,
+              "query_id": "s6_q2"
+            },
+            {
+              "answer": "vacuum-first benchmark",
+              "correct": true,
+              "query_id": "s6_q3"
+            }
+          ],
+          "approx_memory_words": 6,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "rename_rebuild_trace",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s6_q1"
+            },
+            {
+              "answer": "sequential rebuild",
+              "correct": true,
+              "query_id": "s6_q2"
+            },
+            {
+              "answer": "vacuum-first benchmark",
+              "correct": true,
+              "query_id": "s6_q3"
+            }
+          ],
+          "approx_memory_words": 24,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "rename_rebuild_trace",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s6_q1"
+            },
+            {
+              "answer": "sequential rebuild",
+              "correct": true,
+              "query_id": "s6_q2"
+            },
+            {
+              "answer": "vacuum-first benchmark",
+              "correct": true,
+              "query_id": "s6_q3"
+            }
+          ],
+          "approx_memory_words": 24,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3606322705745697,
+          "mean_state_norm": 0.2825976113478343,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "rename_rebuild_trace",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "Core LM",
+              "correct": true,
+              "query_id": "s6_q1"
+            },
+            {
+              "answer": "sequential rebuild",
+              "correct": true,
+              "query_id": "s6_q2"
+            },
+            {
+              "answer": "vacuum-first benchmark",
+              "correct": true,
+              "query_id": "s6_q3"
+            }
+          ],
+          "approx_memory_words": 24,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.3606322705745697,
+          "mean_state_norm": 0.2825976113478343,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "rename_rebuild_trace",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "rename_rebuild_trace"
+    },
+    {
+      "description": "Near-duplicate paraphrases should not create uncontrolled durable growth.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s10_q1"
+            }
+          ],
+          "approx_memory_words": 48,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "repetition_paraphrase_llm_role",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s10_q1"
+            }
+          ],
+          "approx_memory_words": 48,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "repetition_paraphrase_llm_role",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s10_q1"
+            }
+          ],
+          "approx_memory_words": 12,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "repetition_paraphrase_llm_role",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s10_q1"
+            }
+          ],
+          "approx_memory_words": 48,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 4,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "repetition_paraphrase_llm_role",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s10_q1"
+            }
+          ],
+          "approx_memory_words": 48,
+          "deduped_events": 3,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.42089077830314636,
+          "mean_state_norm": 0.3047029450535774,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "repetition_paraphrase_llm_role",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "excitation source only",
+              "correct": true,
+              "query_id": "s10_q1"
+            }
+          ],
+          "approx_memory_words": 48,
+          "deduped_events": 3,
+          "determinism": 1.0,
+          "durable_facts": 1,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.42089077830314636,
+          "mean_state_norm": 0.3047029450535774,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "repetition_paraphrase_llm_role",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "repetition_paraphrase_llm_role"
+    },
+    {
+      "description": "Direct retrieval of formal state-space definitions from the source specification.",
+      "results": [
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s1_q1"
+            },
+            {
+              "answer": "y_t = H(S_t)",
+              "correct": true,
+              "query_id": "s1_q2"
+            },
+            {
+              "answer": "X subset of R^n",
+              "correct": true,
+              "query_id": "s1_q3"
+            }
+          ],
+          "approx_memory_words": 32,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "state_space_foundation",
+          "system": "sliding_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s1_q1"
+            },
+            {
+              "answer": "y_t = H(S_t)",
+              "correct": true,
+              "query_id": "s1_q2"
+            },
+            {
+              "answer": "X subset of R^n",
+              "correct": true,
+              "query_id": "s1_q3"
+            }
+          ],
+          "approx_memory_words": 32,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "state_space_foundation",
+          "system": "large_context_window"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s1_q1"
+            },
+            {
+              "answer": "y_t = H(S_t)",
+              "correct": true,
+              "query_id": "s1_q2"
+            },
+            {
+              "answer": "X subset of R^n",
+              "correct": true,
+              "query_id": "s1_q3"
+            }
+          ],
+          "approx_memory_words": 15,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "state_space_foundation",
+          "system": "periodic_summary"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s1_q1"
+            },
+            {
+              "answer": "y_t = H(S_t)",
+              "correct": true,
+              "query_id": "s1_q2"
+            },
+            {
+              "answer": "X subset of R^n",
+              "correct": true,
+              "query_id": "s1_q3"
+            }
+          ],
+          "approx_memory_words": 32,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.0,
+          "mean_state_norm": 0.0,
+          "passed": true,
+          "provenance_coverage": 0.0,
+          "scenario": "state_space_foundation",
+          "system": "retrieval_only"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s1_q1"
+            },
+            {
+              "answer": "y_t = H(S_t)",
+              "correct": true,
+              "query_id": "s1_q2"
+            },
+            {
+              "answer": "X subset of R^n",
+              "correct": true,
+              "query_id": "s1_q3"
+            }
+          ],
+          "approx_memory_words": 32,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.330127477645874,
+          "mean_state_norm": 0.266119306286176,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "state_space_foundation",
+          "system": "oracle_core"
+        },
+        {
+          "accuracy": 1.0,
+          "answers": [
+            {
+              "answer": "S_{t+1} = F(S_t, U_t)",
+              "correct": true,
+              "query_id": "s1_q1"
+            },
+            {
+              "answer": "y_t = H(S_t)",
+              "correct": true,
+              "query_id": "s1_q2"
+            },
+            {
+              "answer": "X subset of R^n",
+              "correct": true,
+              "query_id": "s1_q3"
+            }
+          ],
+          "approx_memory_words": 32,
+          "deduped_events": 0,
+          "determinism": 1.0,
+          "durable_facts": 3,
+          "invariant_violation_rate": 0.0,
+          "max_state_norm": 0.330127477645874,
+          "mean_state_norm": 0.266119306286176,
+          "passed": true,
+          "provenance_coverage": 1.0,
+          "scenario": "state_space_foundation",
+          "system": "reference_kernel"
+        }
+      ],
+      "scenario": "state_space_foundation"
+    }
+  ],
+  "scenarios": [
+    "adversarial_mixed_branch",
+    "benchmark_principles",
+    "branch_isolation_core_infra_publication",
+    "canonical_pipeline",
+    "chained_corrections",
+    "contradiction_api_port",
+    "contradiction_rename",
+    "delayed_recall_noise",
+    "full_spec_trace",
+    "long_horizon_publication_plan",
+    "near_duplicate_paraphrase_pack",
+    "noise_saturation",
+    "orchestrator_invariants",
+    "perturbation_classes",
+    "provenance_trace",
+    "rename_rebuild_trace",
+    "repetition_paraphrase_llm_role",
+    "state_space_foundation"
+  ],
+  "summaries": [
+    {
+      "approx_memory_words": 989,
+      "invariant_violation_rate": 0.0,
+      "max_state_norm": 0.0,
+      "mean_state_norm": 0.0,
+      "notes": [],
+      "passed_scenarios": 10,
+      "provenance_coverage": 0.0,
+      "query_accuracy": 0.6388888888888888,
+      "replay_determinism": 1.0,
+      "scenarios": 18,
+      "system": "sliding_window",
+      "total_deduped_events": 0,
+      "total_durable_facts": 49
+    },
+    {
+      "approx_memory_words": 2379,
+      "invariant_violation_rate": 0.0,
+      "max_state_norm": 0.0,
+      "mean_state_norm": 0.0,
+      "notes": [],
+      "passed_scenarios": 13,
+      "provenance_coverage": 0.0,
+      "query_accuracy": 0.8333333333333334,
+      "replay_determinism": 1.0,
+      "scenarios": 18,
+      "system": "large_context_window",
+      "total_deduped_events": 0,
+      "total_durable_facts": 62
+    },
+    {
+      "approx_memory_words": 174,
+      "invariant_violation_rate": 0.0,
+      "max_state_norm": 0.0,
+      "mean_state_norm": 0.0,
+      "notes": [],
+      "passed_scenarios": 14,
+      "provenance_coverage": 0.0,
+      "query_accuracy": 0.8611111111111112,
+      "replay_determinism": 1.0,
+      "scenarios": 18,
+      "system": "periodic_summary",
+      "total_deduped_events": 0,
+      "total_durable_facts": 61
+    },
+    {
+      "approx_memory_words": 2962,
+      "invariant_violation_rate": 0.0,
+      "max_state_norm": 0.0,
+      "mean_state_norm": 0.0,
+      "notes": [],
+      "passed_scenarios": 13,
+      "provenance_coverage": 0.0,
+      "query_accuracy": 0.8055555555555556,
+      "replay_determinism": 1.0,
+      "scenarios": 18,
+      "system": "retrieval_only",
+      "total_deduped_events": 0,
+      "total_durable_facts": 63
+    },
+    {
+      "approx_memory_words": 2962,
+      "invariant_violation_rate": 0.0,
+      "max_state_norm": 9.35434627532959,
+      "mean_state_norm": 0.6885946866970369,
+      "notes": [],
+      "passed_scenarios": 18,
+      "provenance_coverage": 1.0,
+      "query_accuracy": 1.0,
+      "replay_determinism": 1.0,
+      "scenarios": 18,
+      "system": "oracle_core",
+      "total_deduped_events": 5,
+      "total_durable_facts": 58
+    },
+    {
+      "approx_memory_words": 2962,
+      "invariant_violation_rate": 0.0,
+      "max_state_norm": 9.35434627532959,
+      "mean_state_norm": 0.6885946866970369,
+      "notes": [],
+      "passed_scenarios": 18,
+      "provenance_coverage": 1.0,
+      "query_accuracy": 1.0,
+      "replay_determinism": 1.0,
+      "scenarios": 18,
+      "system": "reference_kernel",
+      "total_deduped_events": 5,
+      "total_durable_facts": 58
+    }
+  ],
+  "systems": [
+    "sliding_window",
+    "large_context_window",
+    "periodic_summary",
+    "retrieval_only",
+    "oracle_core",
+    "reference_kernel"
+  ]
+}

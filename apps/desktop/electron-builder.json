@@ -1,0 +1,45 @@
+{
+  "appId": "local.corelm.studio",
+  "productName": "Core LM Studio",
+  "directories": {
+    "output": "dist_windows"
+  },
+  "files": [
+    "apps/desktop/dist/**/*",
+    "apps/desktop/dist-electron/**/*",
+    "README.md"
+  ],
+  "extraResources": [
+    {
+      "from": "services",
+      "to": "corelm_service/services",
+      "filter": ["**/*", "!**/__pycache__/**", "!**/*.pyc"]
+    },
+    {
+      "from": "corelm",
+      "to": "corelm_service/corelm",
+      "filter": ["**/*", "!**/__pycache__/**", "!**/*.pyc"]
+    },
+    {
+      "from": "requirements.txt",
+      "to": "corelm_service/requirements.txt"
+    },
+    {
+      "from": "pyproject.toml",
+      "to": "corelm_service/pyproject.toml"
+    }
+  ],
+  "extraMetadata": {
+    "main": "apps/desktop/dist-electron/main.js"
+  },
+  "win": {
+    "target": ["nsis", "zip"],
+    "artifactName": "Core-LM-Studio-${version}-${arch}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false
+  }
+}

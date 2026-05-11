@@ -1,0 +1,67 @@
+{
+  "name": "contradiction_rename",
+  "description": "Project rename with direct correction semantics.",
+  "tags": [
+    "contradiction",
+    "project"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s8_e1",
+      "branch": "project",
+      "text": "Early draft: the product name is Lucid Mind.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "product",
+          "attribute": "name",
+          "value": "Lucid Mind",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s8_e2",
+      "branch": "project",
+      "text": "Final decision: the product name is Core LM.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "product",
+          "attribute": "name",
+          "value": "Core LM",
+          "claim_type": "correction"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s8_q1",
+      "text": "What is the final product name?",
+      "kind": "value",
+      "target_branch": "project",
+      "subject": "product",
+      "attribute": "name",
+      "expected": "Core LM",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s8_q2",
+      "text": "What transition occurred?",
+      "kind": "superseded_by",
+      "target_branch": "project",
+      "subject": "product",
+      "attribute": "name",
+      "expected": "Lucid Mind -> Core LM",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

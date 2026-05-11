@@ -1,0 +1,110 @@
+{
+  "name": "orchestrator_invariants",
+  "description": "Real trace from the orchestrator specification.",
+  "tags": [
+    "spec",
+    "orchestrator"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s3_e1",
+      "branch": "orchestrator",
+      "text": "The orchestrator computes weights with softmax(W O_t + b).",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "weights",
+          "attribute": "rule",
+          "value": "softmax(W O_t + b)",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s3_e2",
+      "branch": "orchestrator",
+      "text": "First invariant: every weight w_i is nonnegative.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "invariant",
+          "attribute": "weights_nonnegative",
+          "value": "w_i >= 0",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s3_e3",
+      "branch": "orchestrator",
+      "text": "Second invariant: the weights sum to one.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "invariant",
+          "attribute": "weights_sum",
+          "value": "sum_i w_i = 1",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s3_e4",
+      "branch": "orchestrator",
+      "text": "Third invariant: the mixed impulse is clipped so that ||U_t|| <= M.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "invariant",
+          "attribute": "input_bound",
+          "value": "||U_t|| <= M",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s3_q1",
+      "text": "How are orchestrator weights computed?",
+      "kind": "value",
+      "target_branch": "orchestrator",
+      "subject": "weights",
+      "attribute": "rule",
+      "expected": "softmax(W O_t + b)",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s3_q2",
+      "text": "What is the sum invariant?",
+      "kind": "value",
+      "target_branch": "orchestrator",
+      "subject": "invariant",
+      "attribute": "weights_sum",
+      "expected": "sum_i w_i = 1",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s3_q3",
+      "text": "What is the input bound invariant?",
+      "kind": "value",
+      "target_branch": "orchestrator",
+      "subject": "invariant",
+      "attribute": "input_bound",
+      "expected": "||U_t|| <= M",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

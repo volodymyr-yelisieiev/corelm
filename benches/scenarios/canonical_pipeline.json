@@ -1,0 +1,110 @@
+{
+  "name": "canonical_pipeline",
+  "description": "Core doctrine trace with project-specific statements used throughout planning.",
+  "tags": [
+    "doctrine",
+    "core"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s4_e1",
+      "branch": "core",
+      "text": "The canonical pipeline is E -> N -> T -> Q -> K.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "pipeline",
+          "attribute": "steps",
+          "value": "E -> N -> T -> Q -> K",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s4_e2",
+      "branch": "core",
+      "text": "Truth is stored in the core state and ledger, not in the LLM.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "truth",
+          "attribute": "location",
+          "value": "core state and ledger",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s4_e3",
+      "branch": "core",
+      "text": "The LLM acts only as an excitation source.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "llm",
+          "attribute": "role",
+          "value": "excitation source only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s4_e4",
+      "branch": "core",
+      "text": "The ledger is append-only.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "ledger",
+          "attribute": "property",
+          "value": "append-only",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s4_q1",
+      "text": "What is the canonical pipeline?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "pipeline",
+      "attribute": "steps",
+      "expected": "E -> N -> T -> Q -> K",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s4_q2",
+      "text": "Where is truth stored?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "truth",
+      "attribute": "location",
+      "expected": "core state and ledger",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s4_q3",
+      "text": "What is the role of the LLM?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "llm",
+      "attribute": "role",
+      "expected": "excitation source only",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

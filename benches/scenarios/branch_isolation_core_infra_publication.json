@@ -1,0 +1,126 @@
+{
+  "name": "branch_isolation_core_infra_publication",
+  "description": "Mixed branches should not contaminate one another.",
+  "tags": [
+    "branches",
+    "isolation"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s9_e1",
+      "branch": "core",
+      "text": "Truth is kept in the core state and ledger.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "truth",
+          "attribute": "location",
+          "value": "core state and ledger",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s9_e2",
+      "branch": "infra",
+      "text": "RunPod is the current infrastructure provider.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "provider",
+          "attribute": "name",
+          "value": "RunPod",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s9_e3",
+      "branch": "publication",
+      "text": "The publication target is arXiv.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "target",
+          "attribute": "venue",
+          "value": "arXiv",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s9_e4",
+      "branch": "core",
+      "text": "The pipeline remains E -> N -> T -> Q -> K.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "pipeline",
+          "attribute": "steps",
+          "value": "E -> N -> T -> Q -> K",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    },
+    {
+      "event_id": "s9_e5",
+      "branch": "infra",
+      "text": "The external API port is 9090.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "api",
+          "attribute": "port",
+          "value": "9090",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 5,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s9_q1",
+      "text": "Where is truth kept?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "truth",
+      "attribute": "location",
+      "expected": "core state and ledger",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s9_q2",
+      "text": "Which provider is used in infra?",
+      "kind": "value",
+      "target_branch": "infra",
+      "subject": "provider",
+      "attribute": "name",
+      "expected": "RunPod",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s9_q3",
+      "text": "What is the publication venue?",
+      "kind": "value",
+      "target_branch": "publication",
+      "subject": "target",
+      "attribute": "venue",
+      "expected": "arXiv",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

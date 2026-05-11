@@ -1,0 +1,400 @@
+{
+  "name": "delayed_recall_noise",
+  "description": "A fact must survive a long noisy middle segment.",
+  "tags": [
+    "retention",
+    "noise"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s5_e1",
+      "branch": "core",
+      "text": "Project codename is AURORA-17.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "project",
+          "attribute": "codename",
+          "value": "AURORA-17",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_1",
+      "branch": "misc",
+      "text": "Noise note 1: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_2",
+      "branch": "ops",
+      "text": "Noise note 2: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_3",
+      "branch": "chat",
+      "text": "Noise note 3: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 4,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_4",
+      "branch": "misc",
+      "text": "Noise note 4: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 5,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_5",
+      "branch": "ops",
+      "text": "Noise note 5: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 6,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_6",
+      "branch": "chat",
+      "text": "Noise note 6: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 7,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_7",
+      "branch": "misc",
+      "text": "Noise note 7: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 8,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_8",
+      "branch": "ops",
+      "text": "Noise note 8: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 9,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_9",
+      "branch": "chat",
+      "text": "Noise note 9: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 10,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_10",
+      "branch": "misc",
+      "text": "Noise note 10: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 11,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_11",
+      "branch": "ops",
+      "text": "Noise note 11: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 12,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_12",
+      "branch": "chat",
+      "text": "Noise note 12: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 13,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_13",
+      "branch": "misc",
+      "text": "Noise note 13: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 14,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_14",
+      "branch": "ops",
+      "text": "Noise note 14: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 15,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_15",
+      "branch": "chat",
+      "text": "Noise note 15: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 16,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_16",
+      "branch": "misc",
+      "text": "Noise note 16: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 17,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_17",
+      "branch": "ops",
+      "text": "Noise note 17: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 18,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_18",
+      "branch": "chat",
+      "text": "Noise note 18: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 19,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_19",
+      "branch": "misc",
+      "text": "Noise note 19: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 20,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_20",
+      "branch": "ops",
+      "text": "Noise note 20: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 21,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_21",
+      "branch": "chat",
+      "text": "Noise note 21: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 22,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_22",
+      "branch": "misc",
+      "text": "Noise note 22: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 23,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_23",
+      "branch": "ops",
+      "text": "Noise note 23: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 24,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_24",
+      "branch": "chat",
+      "text": "Noise note 24: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 25,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_25",
+      "branch": "misc",
+      "text": "Noise note 25: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 26,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_26",
+      "branch": "ops",
+      "text": "Noise note 26: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 27,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_27",
+      "branch": "chat",
+      "text": "Noise note 27: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 28,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_28",
+      "branch": "misc",
+      "text": "Noise note 28: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 29,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_29",
+      "branch": "ops",
+      "text": "Noise note 29: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 30,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_30",
+      "branch": "chat",
+      "text": "Noise note 30: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 31,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_31",
+      "branch": "misc",
+      "text": "Noise note 31: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 32,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_32",
+      "branch": "ops",
+      "text": "Noise note 32: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 33,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_33",
+      "branch": "chat",
+      "text": "Noise note 33: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 34,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_34",
+      "branch": "misc",
+      "text": "Noise note 34: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 35,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_35",
+      "branch": "ops",
+      "text": "Noise note 35: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 36,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_36",
+      "branch": "chat",
+      "text": "Noise note 36: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 37,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_37",
+      "branch": "misc",
+      "text": "Noise note 37: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 38,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_38",
+      "branch": "ops",
+      "text": "Noise note 38: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 39,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_39",
+      "branch": "chat",
+      "text": "Noise note 39: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 40,
+      "meta": {}
+    },
+    {
+      "event_id": "s5_n_40",
+      "branch": "misc",
+      "text": "Noise note 40: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 41,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s5_q1",
+      "text": "What was the project codename?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "project",
+      "attribute": "codename",
+      "expected": "AURORA-17",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

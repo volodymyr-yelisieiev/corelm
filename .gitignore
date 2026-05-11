@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+.env/
+.local100_edit_venv/
+.local100_wheel_venv/
+
+# Build and packaging
+build/
+dist/
+node_modules/
+apps/desktop/dist/
+apps/desktop/dist-electron/
+dist_windows/
+.local100_wheelhouse/
+*.whl
+*.tar.gz
+
+# Test and tooling
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Local artifacts
+.corelm_studio/
+.corelm_studio_test/
+.corelm_studio_dev/
+exports/
+.local100_edit_demo.json
+.local100_edit_get.txt
+reports/check_*.json
+reports/check_*.md
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

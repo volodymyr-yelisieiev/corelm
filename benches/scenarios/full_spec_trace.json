@@ -1,0 +1,362 @@
+{
+  "name": "full_spec_trace",
+  "description": "Long mixed trace touching all three formal documents plus benchmark policy.",
+  "tags": [
+    "full",
+    "mixed"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s18_e1",
+      "branch": "core",
+      "text": "Core LM uses S_{t+1} = F(S_t, U_t).",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "state",
+          "attribute": "equation",
+          "value": "S_{t+1} = F(S_t, U_t)",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_e2",
+      "branch": "perturbation",
+      "text": "Class one perturbation is deterministic structured input.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "perturbation",
+          "attribute": "class_1",
+          "value": "deterministic structured input",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_e3",
+      "branch": "orchestrator",
+      "text": "The mixed impulse is clipped to respect ||U_t|| <= M.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "invariant",
+          "attribute": "input_bound",
+          "value": "||U_t|| <= M",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_e4",
+      "branch": "core",
+      "text": "Truth is stored in core state and ledger.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "truth",
+          "attribute": "location",
+          "value": "core state and ledger",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_e5",
+      "branch": "benchmark",
+      "text": "Benchmark mode is real traces plus synthetic controls.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "benchmark",
+          "attribute": "mode",
+          "value": "real traces plus synthetic controls",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 5,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_1",
+      "branch": "misc",
+      "text": "Noise note 1: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 6,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_2",
+      "branch": "ops",
+      "text": "Noise note 2: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 7,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_3",
+      "branch": "draft",
+      "text": "Noise note 3: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 8,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_4",
+      "branch": "chat",
+      "text": "Noise note 4: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 9,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_5",
+      "branch": "misc",
+      "text": "Noise note 5: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 10,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_6",
+      "branch": "ops",
+      "text": "Noise note 6: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 11,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_7",
+      "branch": "draft",
+      "text": "Noise note 7: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 12,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_8",
+      "branch": "chat",
+      "text": "Noise note 8: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 13,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_9",
+      "branch": "misc",
+      "text": "Noise note 9: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 14,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_10",
+      "branch": "ops",
+      "text": "Noise note 10: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 15,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_11",
+      "branch": "draft",
+      "text": "Noise note 11: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 16,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_12",
+      "branch": "chat",
+      "text": "Noise note 12: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 17,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_13",
+      "branch": "misc",
+      "text": "Noise note 13: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 18,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_14",
+      "branch": "ops",
+      "text": "Noise note 14: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 19,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_15",
+      "branch": "draft",
+      "text": "Noise note 15: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 20,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_16",
+      "branch": "chat",
+      "text": "Noise note 16: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 21,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_17",
+      "branch": "misc",
+      "text": "Noise note 17: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 22,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_18",
+      "branch": "ops",
+      "text": "Noise note 18: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 23,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_19",
+      "branch": "draft",
+      "text": "Noise note 19: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 24,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_20",
+      "branch": "chat",
+      "text": "Noise note 20: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 25,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_21",
+      "branch": "misc",
+      "text": "Noise note 21: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 26,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_22",
+      "branch": "ops",
+      "text": "Noise note 22: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 27,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_23",
+      "branch": "draft",
+      "text": "Noise note 23: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 28,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_24",
+      "branch": "chat",
+      "text": "Noise note 24: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 29,
+      "meta": {}
+    },
+    {
+      "event_id": "s18_n_25",
+      "branch": "misc",
+      "text": "Noise note 25: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 30,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s18_q1",
+      "text": "What is the state equation?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "state",
+      "attribute": "equation",
+      "expected": "S_{t+1} = F(S_t, U_t)",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s18_q2",
+      "text": "What is perturbation class one?",
+      "kind": "value",
+      "target_branch": "perturbation",
+      "subject": "perturbation",
+      "attribute": "class_1",
+      "expected": "deterministic structured input",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s18_q3",
+      "text": "What is the input bound?",
+      "kind": "value",
+      "target_branch": "orchestrator",
+      "subject": "invariant",
+      "attribute": "input_bound",
+      "expected": "||U_t|| <= M",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s18_q4",
+      "text": "Where is truth stored?",
+      "kind": "value",
+      "target_branch": "core",
+      "subject": "truth",
+      "attribute": "location",
+      "expected": "core state and ledger",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

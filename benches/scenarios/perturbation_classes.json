@@ -1,0 +1,110 @@
+{
+  "name": "perturbation_classes",
+  "description": "Real trace derived from the perturbation formalization.",
+  "tags": [
+    "spec",
+    "perturbation"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s2_e1",
+      "branch": "perturbation",
+      "text": "Class one is deterministic structured input, usually LLM-vectorized.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "perturbation",
+          "attribute": "class_1",
+          "value": "deterministic structured input",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s2_e2",
+      "branch": "perturbation",
+      "text": "Class two is stochastic perturbation with a distribution D(mu, Sigma).",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "perturbation",
+          "attribute": "class_2",
+          "value": "stochastic perturbation",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s2_e3",
+      "branch": "perturbation",
+      "text": "Class three is a chaotic generator driven by a deterministic nonlinear map.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "perturbation",
+          "attribute": "class_3",
+          "value": "chaotic generator",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s2_e4",
+      "branch": "perturbation",
+      "text": "The stability notion used for bounded input is input-to-state stability (ISS).",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "stability",
+          "attribute": "notion",
+          "value": "input-to-state stability (ISS)",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s2_q1",
+      "text": "What is perturbation class one?",
+      "kind": "value",
+      "target_branch": "perturbation",
+      "subject": "perturbation",
+      "attribute": "class_1",
+      "expected": "deterministic structured input",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s2_q2",
+      "text": "What is perturbation class two?",
+      "kind": "value",
+      "target_branch": "perturbation",
+      "subject": "perturbation",
+      "attribute": "class_2",
+      "expected": "stochastic perturbation",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s2_q3",
+      "text": "What stability notion is used for bounded input?",
+      "kind": "value",
+      "target_branch": "perturbation",
+      "subject": "stability",
+      "attribute": "notion",
+      "expected": "input-to-state stability (ISS)",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

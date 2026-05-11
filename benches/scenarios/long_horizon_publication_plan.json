@@ -1,0 +1,385 @@
+{
+  "name": "long_horizon_publication_plan",
+  "description": "Long planning trace with late recall requirements.",
+  "tags": [
+    "planning",
+    "retention"
+  ],
+  "threshold": 1.0,
+  "events": [
+    {
+      "event_id": "s12_e1",
+      "branch": "publication",
+      "text": "The publication package needs a README.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "package",
+          "attribute": "component_1",
+          "value": "README",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 1,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_e2",
+      "branch": "publication",
+      "text": "The publication package needs a manuscript.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "package",
+          "attribute": "component_2",
+          "value": "manuscript",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 2,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_e3",
+      "branch": "publication",
+      "text": "The publication package needs benchmark reports.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "package",
+          "attribute": "component_3",
+          "value": "benchmark reports",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 3,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_e4",
+      "branch": "publication",
+      "text": "The publication package needs claim discipline notes.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "package",
+          "attribute": "component_4",
+          "value": "claim discipline notes",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 4,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_e5",
+      "branch": "publication",
+      "text": "The frozen release should be a reproducible zip archive.",
+      "event_type": "message",
+      "annotations": [
+        {
+          "subject": "release",
+          "attribute": "format",
+          "value": "reproducible zip archive",
+          "claim_type": "fact"
+        }
+      ],
+      "timestamp": 5,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_1",
+      "branch": "chat",
+      "text": "Noise note 1: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 6,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_2",
+      "branch": "misc",
+      "text": "Noise note 2: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 7,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_3",
+      "branch": "chat",
+      "text": "Noise note 3: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 8,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_4",
+      "branch": "misc",
+      "text": "Noise note 4: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 9,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_5",
+      "branch": "chat",
+      "text": "Noise note 5: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 10,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_6",
+      "branch": "misc",
+      "text": "Noise note 6: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 11,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_7",
+      "branch": "chat",
+      "text": "Noise note 7: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 12,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_8",
+      "branch": "misc",
+      "text": "Noise note 8: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 13,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_9",
+      "branch": "chat",
+      "text": "Noise note 9: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 14,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_10",
+      "branch": "misc",
+      "text": "Noise note 10: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 15,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_11",
+      "branch": "chat",
+      "text": "Noise note 11: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 16,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_12",
+      "branch": "misc",
+      "text": "Noise note 12: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 17,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_13",
+      "branch": "chat",
+      "text": "Noise note 13: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 18,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_14",
+      "branch": "misc",
+      "text": "Noise note 14: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 19,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_15",
+      "branch": "chat",
+      "text": "Noise note 15: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 20,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_16",
+      "branch": "misc",
+      "text": "Noise note 16: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 21,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_17",
+      "branch": "chat",
+      "text": "Noise note 17: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 22,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_18",
+      "branch": "misc",
+      "text": "Noise note 18: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 23,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_19",
+      "branch": "chat",
+      "text": "Noise note 19: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 24,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_20",
+      "branch": "misc",
+      "text": "Noise note 20: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 25,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_21",
+      "branch": "chat",
+      "text": "Noise note 21: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 26,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_22",
+      "branch": "misc",
+      "text": "Noise note 22: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 27,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_23",
+      "branch": "chat",
+      "text": "Noise note 23: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 28,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_24",
+      "branch": "misc",
+      "text": "Noise note 24: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 29,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_25",
+      "branch": "chat",
+      "text": "Noise note 25: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 30,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_26",
+      "branch": "misc",
+      "text": "Noise note 26: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 31,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_27",
+      "branch": "chat",
+      "text": "Noise note 27: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 32,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_28",
+      "branch": "misc",
+      "text": "Noise note 28: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 33,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_29",
+      "branch": "chat",
+      "text": "Noise note 29: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 34,
+      "meta": {}
+    },
+    {
+      "event_id": "s12_n_30",
+      "branch": "misc",
+      "text": "Noise note 30: unrelated operational chatter about logs, reminders, and status text.",
+      "event_type": "message",
+      "annotations": [],
+      "timestamp": 35,
+      "meta": {}
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "s12_q1",
+      "text": "What is the release format?",
+      "kind": "value",
+      "target_branch": "publication",
+      "subject": "release",
+      "attribute": "format",
+      "expected": "reproducible zip archive",
+      "expected_contains": [],
+      "meta": {}
+    },
+    {
+      "query_id": "s12_q2",
+      "text": "What is the fourth package component?",
+      "kind": "value",
+      "target_branch": "publication",
+      "subject": "package",
+      "attribute": "component_4",
+      "expected": "claim discipline notes",
+      "expected_contains": [],
+      "meta": {}
+    }
+  ]
+}

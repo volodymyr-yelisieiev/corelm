@@ -1,0 +1,66 @@
+{
+  "id": "canonical-core-flow",
+  "name": "Canonical Core Flow",
+  "description": "Manual text through compression, Core LM, global chat, and programming-agent packet output.",
+  "schedule": {
+    "enabled": false,
+    "cron": ""
+  },
+  "nodes": [
+    {
+      "id": "manual",
+      "type": "manual_text_input",
+      "position": { "x": 48, "y": 96 },
+      "config": {
+        "text": "project.name = Core LM Studio\nllm.role = perturbation source only"
+      }
+    },
+    {
+      "id": "clean",
+      "type": "clean_text",
+      "position": { "x": 292, "y": 96 },
+      "config": {}
+    },
+    {
+      "id": "canonical",
+      "type": "canonicalize",
+      "position": { "x": 536, "y": 96 },
+      "config": {}
+    },
+    {
+      "id": "core",
+      "type": "core_lm",
+      "position": { "x": 780, "y": 96 },
+      "config": {
+        "format": "developer_handoff_packet",
+        "compression": {
+          "steps": ["sanitize", "clean", "dedupe", "canonicalize", "schema_extract", "hash_compress", "contradiction_tag"],
+          "allow_raw_commit": true
+        }
+      }
+    },
+    {
+      "id": "chat",
+      "type": "chat",
+      "position": { "x": 1024, "y": 96 },
+      "config": {}
+    },
+    {
+      "id": "packet",
+      "type": "outbound_prompt",
+      "position": { "x": 1268, "y": 96 },
+      "config": {
+        "target_type": "programming_agent_packet",
+        "packet_type": "engineering_task_packet",
+        "mock": true
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "manual", "target": "clean" },
+    { "id": "e2", "source": "clean", "target": "canonical" },
+    { "id": "e3", "source": "canonical", "target": "core" },
+    { "id": "e4", "source": "core", "target": "chat" },
+    { "id": "e5", "source": "chat", "target": "packet" }
+  ]
+}
