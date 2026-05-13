@@ -31,6 +31,7 @@ class ConnectorIngestRequest(BaseModel):
     format: str = "markdown"
     compression: dict[str, Any] = Field(default_factory=dict)
     annotations: list[dict[str, Any]] = Field(default_factory=list)
+    evaluator_config: dict[str, Any] = Field(default_factory=dict)
 
 
 class ConnectorSaveRequest(BaseModel):
@@ -44,6 +45,14 @@ class IngestRequest(BaseModel):
     source: dict[str, Any] = Field(default_factory=dict)
     workflow_id: str | None = None
     format: str = "markdown"
+    compression: dict[str, Any] = Field(default_factory=dict)
+    annotations: list[dict[str, Any]] = Field(default_factory=list)
+    evaluator_config: dict[str, Any] = Field(default_factory=dict)
+
+
+class CompressionPreviewRequest(BaseModel):
+    text: str
+    branch: str = "corelm"
     compression: dict[str, Any] = Field(default_factory=dict)
     annotations: list[dict[str, Any]] = Field(default_factory=list)
 
@@ -89,6 +98,12 @@ class ChatPromoteRequest(BaseModel):
 
 class SettingsUpdateRequest(BaseModel):
     settings: dict[str, Any] = Field(default_factory=dict)
+
+
+class LocalRuntimeEnsureRequest(BaseModel):
+    provider: str | None = None
+    base_url: str | None = None
+    config: dict[str, Any] = Field(default_factory=dict)
 
 
 FormatName = Literal[

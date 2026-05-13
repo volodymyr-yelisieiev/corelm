@@ -7,7 +7,7 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 remove_dirs = {
     '.venv', 'venv', '.pytest_cache', 'build', 'dist', 'dist-electron',
-    'node_modules', 'dist_windows', '.corelm_studio', '.corelm_studio_test',
+    'node_modules', 'runtime', 'dist_windows', '.corelm_studio', '.corelm_studio_test',
     '.corelm_studio_dev', 'exports',
     '.local100_edit_venv', '.local100_wheel_venv', '.local100_wheelhouse',
     '.variant_edit', '.variant_wheel',

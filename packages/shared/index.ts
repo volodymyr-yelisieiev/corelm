@@ -9,6 +9,29 @@ export type ConnectorMetadata = {
   workspace: string;
   trust_level: "low" | "medium" | "high" | string;
   schema_tag?: string | null;
+  provider_metrics?: ProviderMetrics | null;
+};
+
+export type ProviderMetrics = {
+  version: string;
+  provider: string;
+  provider_metrics_available: boolean;
+  native: Record<string, unknown>;
+  local: Record<string, number | null>;
+  derived: Record<string, number | null>;
+  metric_sources: Record<string, string>;
+  raw_usage: Record<string, unknown>;
+};
+
+export type QualityEvaluation = {
+  version: string;
+  modes: string[];
+  summary_score: number | null;
+  checks: Record<string, { passed: boolean | null; value: unknown; applicable: boolean; detail?: string | null }>;
+  booleans: Record<string, boolean>;
+  numeric_values: Record<string, number>;
+  reference_provided: boolean;
+  notes: string;
 };
 
 export type ChatBusMessage = {

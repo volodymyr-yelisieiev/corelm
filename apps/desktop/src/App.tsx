@@ -31,11 +31,17 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
+import { CompressionPanel } from "./CompressionPanel";
+import { defaultOllamaConfig, defaultWorkflow } from "./defaults";
 import type {
   ChatMessage,
+  CompressionPreview,
   ConnectorRecord,
   LedgerMirror,
+  LocalRuntimeStatus,
   MetricRecord,
+  ProviderMetrics,
+  QualityEvaluation,
   ReplaySnapshot,
   SessionRecord,
   StudioState,
@@ -44,42 +50,18 @@ import type {
   WorkflowRunRecord,
   WorkflowRunResult
 } from "./types";
-
-type Mode = "console" | "flow";
-type DrawerTab = "history" | "connectors" | "settings";
-
-const defaultWorkflow: Workflow = {
-  id: "demo-canonical-flow",
-  name: "Canonical Core LM Flow",
-  description: "Manual text through Core LM and outbound packet export.",
-  schedule: { enabled: false, cron: "" },
-  nodes: [
-    { id: "n1", type: "manual_text_input", position: { x: 48, y: 96 }, config: { text: "project.name = Core LM Studio" } },
-    { id: "n2", type: "clean_text", position: { x: 292, y: 96 }, config: {} },
-    { id: "n3", type: "canonicalize", position: { x: 536, y: 96 }, config: {} },
-    { id: "n4", type: "core_lm", position: { x: 780, y: 96 }, config: { format: "markdown" } },
-    { id: "n5", type: "chat", position: { x: 1024, y: 96 }, config: {} },
-    { id: "n6", type: "outbound_prompt", position: { x: 1268, y: 96 }, config: { target_type: "programming_agent_packet" } }
-  ],
-  edges: [
-    { id: "e1", source: "n1", target: "n2" },
-    { id: "e2", source: "n2", target: "n3" },
-    { id: "e3", source: "n3", target: "n4" },
-    { id: "e4", source: "n4", target: "n5" },
-    { id: "e5", source: "n5", target: "n6" }
-  ]
-};
-
-function compactDigest(value?: string): string {
-  if (!value) {
-    return "pending";
-  }
-  return `${value.slice(0, 10)}...${value.slice(-6)}`;
-}
-
-function tryReadNumber(value: unknown): string {
-  return typeof value === "number" ? value.toFixed(3) : "0.000";
-}
+import {
+  collectCompressionPackets,
+  compactDigest,
+  maybeCompression,
+  metricText,
+  onEnterOrSpace,
+  qualityLabel,
+  tryReadNumber,
+  type CompressionSelection,
+  type DrawerTab,
+  type Mode
+} from "./uiUtils";
 
 export default function App() {
   const [mode, setMode] = useState<Mode>("console");
@@ -94,6 +76,8 @@ export default function App() {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [ledger, setLedger] = useState<LedgerMirror[]>([]);
   const [metrics, setMetrics] = useState<MetricRecord[]>([]);
+  const [qualityRecords, setQualityRecords] = useState<Array<{ id: string; target_type: string; target_id: string; evaluation: QualityEvaluation }>>([]);
+  const [localRuntime, setLocalRuntime] = useState<LocalRuntimeStatus | null>(null);
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [connectors, setConnectors] = useState<ConnectorRecord[]>([]);
   const [settings, setSettings] = useState<Record<string, unknown>>({});
@@ -106,10 +90,15 @@ export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [historyQuery, setHistoryQuery] = useState("");
   const [provenance, setProvenance] = useState<Record<string, unknown> | null>(null);
+  const [compressionPreviewResult, setCompressionPreviewResult] = useState<CompressionPreview | null>(null);
+  const [compressionSelection, setCompressionSelection] = useState<CompressionSelection | null>(null);
+  const [compressionCompare, setCompressionCompare] = useState<CompressionSelection | null>(null);
   const importRef = useRef<HTMLInputElement | null>(null);
 
   const latestMessage = chat[chat.length - 1];
   const latestMetric = metrics[metrics.length - 1]?.metric;
+  const latestQuality = (latestMetric?.quality_eval as QualityEvaluation | undefined) ?? qualityRecords[qualityRecords.length - 1]?.evaluation;
+  const latestProviderMetrics = latestMetric?.provider_metrics as ProviderMetrics | undefined;
   const branches = state?.branches?.length ? state.branches : ["corelm"];
 
   const refresh = useCallback(async () => {
@@ -119,6 +108,8 @@ export default function App() {
         nextChat,
         nextLedger,
         nextMetrics,
+        nextQuality,
+        nextRuntime,
         nextWorkflows,
         nextConnectors,
         nextSettings,
@@ -130,6 +121,8 @@ export default function App() {
         api.chat(sessionId),
         api.ledger(sessionId),
         api.metrics(sessionId),
+        api.quality(sessionId),
+        api.localRuntime("ollama"),
         api.workflows(),
         api.connectors(),
         api.settings(),
@@ -151,6 +144,13 @@ export default function App() {
       apply(nextChat as { status: "fulfilled"; value: ChatMessage[] } | { status: "rejected" }, setChat);
       apply(nextLedger as { status: "fulfilled"; value: LedgerMirror[] } | { status: "rejected" }, setLedger);
       apply(nextMetrics as { status: "fulfilled"; value: MetricRecord[] } | { status: "rejected" }, setMetrics);
+      apply(
+        nextQuality as
+          | { status: "fulfilled"; value: Array<{ id: string; target_type: string; target_id: string; evaluation: QualityEvaluation }> }
+          | { status: "rejected" },
+        setQualityRecords
+      );
+      apply(nextRuntime as { status: "fulfilled"; value: LocalRuntimeStatus } | { status: "rejected" }, setLocalRuntime);
       apply(nextConnectors as { status: "fulfilled"; value: ConnectorRecord[] } | { status: "rejected" }, setConnectors);
       apply(nextSettings as { status: "fulfilled"; value: Record<string, unknown> } | { status: "rejected" }, setSettings);
       apply(nextReplaySnapshots as { status: "fulfilled"; value: ReplaySnapshot[] } | { status: "rejected" }, setReplaySnapshots);
@@ -237,14 +237,49 @@ export default function App() {
   }
 
   async function previewCompression() {
-    const canonical = inputText
-      .replace(/\r\n/g, "\n")
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line, index, lines) => line.length === 0 || lines.indexOf(line) === index)
-      .join("\n")
-      .trim();
-    setReadout(canonical || "empty canonical preview");
+    setStatus("busy");
+    setReadout("building compression preview...");
+    try {
+      const result = await api.compressionPreview({
+        text: inputText,
+        branch,
+        compression: {
+          steps: ["sanitize", "clean", "dedupe", "canonicalize", "schema_extract", "hash_compress", "contradiction_tag"],
+          allow_raw_commit: true
+        }
+      });
+      setCompressionPreviewResult(result);
+      setDrawerOpen(true);
+      setDrawerTab("compression");
+      setReadout(`compression ${result.compression_ratio.toFixed(3)} | ${compactDigest(result.digest)}`);
+      setStatus("online");
+    } catch (error) {
+      setReadout(error instanceof Error ? error.message : "compression preview failed");
+      setStatus("online");
+    }
+  }
+
+  function openCompression(packet: CompressionPreview | null, label: string, compare = false) {
+    const selection = { label, packet };
+    if (compare) {
+      setCompressionCompare(selection);
+    } else {
+      setCompressionSelection(selection);
+    }
+    setMode("console");
+    setDrawerOpen(true);
+    setDrawerTab("compression");
+    setReadout(packet ? `compression ${label} | ${compactDigest(packet.digest)}` : "no compression metadata available");
+  }
+
+  async function inspectCompressionTarget(targetType: string, targetId: string, label: string, compare = false) {
+    try {
+      const result = await api.compressionLookup(sessionId, targetType, targetId);
+      const first = result.packets[0];
+      openCompression(first?.packet ?? null, first?.label ?? label, compare);
+    } catch {
+      openCompression(null, label, compare);
+    }
   }
 
   async function routeLatest() {
@@ -391,6 +426,19 @@ export default function App() {
     await refresh();
   }
 
+  async function ensureLocalRuntime(config: Record<string, unknown>) {
+    setStatus("busy");
+    try {
+      const status = await api.ensureLocalRuntime("ollama", config);
+      setLocalRuntime(status);
+      setReadout(status.healthy ? "ollama runtime ready" : `ollama runtime unavailable: ${status.last_error ?? "not healthy"}`);
+      setStatus("online");
+    } catch (error) {
+      setReadout(error instanceof Error ? error.message : "runtime start failed");
+      setStatus("online");
+    }
+  }
+
   async function deleteConnector(connectorId: string) {
     await api.deleteConnector(connectorId);
     setReadout(`deleted connector ${connectorId}`);
@@ -418,10 +466,10 @@ export default function App() {
           </div>
         </div>
         <nav className="mode-tabs" aria-label="Primary modes">
-          <button className={mode === "console" ? "active" : ""} onClick={() => setMode("console")}>
+          <button className={mode === "console" ? "active" : ""} aria-pressed={mode === "console"} onClick={() => setMode("console")}>
             <Terminal size={18} /> Console
           </button>
-          <button className={mode === "flow" ? "active" : ""} onClick={() => setMode("flow")}>
+          <button className={mode === "flow" ? "active" : ""} aria-pressed={mode === "flow"} onClick={() => setMode("flow")}>
             <Network size={18} /> Flow Studio
           </button>
         </nav>
@@ -460,8 +508,11 @@ export default function App() {
       </header>
 
       {paletteOpen && (
-        <div className="palette" role="dialog" aria-label="Command palette">
+        <div className="palette" role="dialog" aria-modal="true" aria-label="Command palette">
           <div className="palette-inner">
+            <button onClick={() => setPaletteOpen(false)}>
+              <Archive size={17} /> Close
+            </button>
             <button onClick={() => void ingestText()}>
               <Play size={17} /> Run Core LM
             </button>
@@ -505,6 +556,8 @@ export default function App() {
               </div>
             </div>
 
+            <MetricsStrip metric={latestMetric} quality={latestQuality} providerMetrics={latestProviderMetrics} />
+
             <div className="input-strip">
               <textarea value={inputText} onChange={(event) => setInputText(event.target.value)} aria-label="Core LM input" />
               <div className="format-stack">
@@ -532,13 +585,16 @@ export default function App() {
           {drawerOpen && (
             <aside className="side-drawer">
               <div className="drawer-tabs">
-                <button className={drawerTab === "history" ? "active" : ""} onClick={() => setDrawerTab("history")}>
+                <button className={drawerTab === "history" ? "active" : ""} aria-pressed={drawerTab === "history"} onClick={() => setDrawerTab("history")}>
                   <History size={16} /> History
                 </button>
-                <button className={drawerTab === "connectors" ? "active" : ""} onClick={() => setDrawerTab("connectors")}>
+                <button className={drawerTab === "compression" ? "active" : ""} aria-pressed={drawerTab === "compression"} onClick={() => setDrawerTab("compression")}>
+                  <Braces size={16} /> Compression
+                </button>
+                <button className={drawerTab === "connectors" ? "active" : ""} aria-pressed={drawerTab === "connectors"} onClick={() => setDrawerTab("connectors")}>
                   <Route size={16} /> Connectors
                 </button>
-                <button className={drawerTab === "settings" ? "active" : ""} onClick={() => setDrawerTab("settings")}>
+                <button className={drawerTab === "settings" ? "active" : ""} aria-pressed={drawerTab === "settings"} onClick={() => setDrawerTab("settings")}>
                   <Settings size={16} /> Settings
                 </button>
               </div>
@@ -548,20 +604,36 @@ export default function App() {
                   setQuery={setHistoryQuery}
                   chat={filteredChat}
                   ledger={ledger}
+                  metrics={metrics}
+                  qualityRecords={qualityRecords}
                   provenance={provenance}
                   replaySnapshots={replaySnapshots}
                   workflowRuns={workflowRuns}
                   onRoute={routeLatest}
                   onPromote={promoteLatest}
+                  onInspectCompression={openCompression}
+                  onLookupCompression={inspectCompressionTarget}
+                />
+              )}
+              {drawerTab === "compression" && (
+                <CompressionPanel
+                  preview={compressionPreviewResult}
+                  selection={compressionSelection}
+                  compare={compressionCompare}
+                  inputText={inputText}
+                  onPreview={previewCompression}
+                  onClearCompare={() => setCompressionCompare(null)}
                 />
               )}
               {drawerTab === "connectors" && (
                 <ConnectorPanel
                   connectors={connectors}
                   branch={branch}
+                  runtime={localRuntime}
                   onRun={runConnectorIntoCore}
                   onSave={saveConnector}
                   onDelete={deleteConnector}
+                  onEnsureRuntime={ensureLocalRuntime}
                 />
               )}
               {drawerTab === "settings" && <SettingsPanel state={state} settings={settings} onUpdate={updateStudioSettings} />}
@@ -581,6 +653,7 @@ export default function App() {
           onClone={cloneCurrentWorkflow}
           onExport={exportWorkflow}
           onImport={() => importRef.current?.click()}
+          onInspectCompression={openCompression}
         />
       )}
 
@@ -609,26 +682,69 @@ function ActionButton({ icon, label, onClick, primary = false }: { icon: React.R
   );
 }
 
+function MetricsStrip({
+  metric,
+  quality,
+  providerMetrics
+}: {
+  metric: Record<string, unknown> | undefined;
+  quality?: QualityEvaluation | null;
+  providerMetrics?: ProviderMetrics;
+}) {
+  const available = providerMetrics?.provider_metrics_available ?? Boolean(metric?.provider_metrics_available);
+  const cards = [
+    ["provider", available ? "available" : "unavailable"],
+    ["latency", metricText(metric, "provider_total_latency_ms", " ms", 1)],
+    ["load", metricText(metric, "provider_load_latency_ms", " ms", 1)],
+    ["prompt", metricText(metric, "prompt_tokens", "", 0)],
+    ["completion", metricText(metric, "completion_tokens", "", 0)],
+    ["total", metricText(metric, "total_tokens", "", 0)],
+    ["gen t/s", metricText(metric, "generation_tokens_per_second", "", 1)],
+    ["prompt t/s", metricText(metric, "prompt_tokens_per_second", "", 1)],
+    ["e2e t/s", metricText(metric, "end_to_end_tokens_per_second", "", 1)],
+    ["compression", metricText(metric, "compression_ratio_proxy", "", 3)],
+    ["quality", qualityLabel(quality)]
+  ];
+  return (
+    <div className="metrics-strip" role="status" aria-live="polite" aria-label="Run metrics">
+      {cards.map(([label, value]) => (
+        <span key={label} className={label === "provider" && !available ? "muted" : ""}>
+          <strong>{label}</strong>
+          {value}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function HistoryPanel({
   query,
   setQuery,
   chat,
   ledger,
+  metrics,
+  qualityRecords,
   provenance,
   replaySnapshots,
   workflowRuns,
   onRoute,
-  onPromote
+  onPromote,
+  onInspectCompression,
+  onLookupCompression
 }: {
   query: string;
   setQuery: (value: string) => void;
   chat: ChatMessage[];
   ledger: LedgerMirror[];
+  metrics: MetricRecord[];
+  qualityRecords: Array<{ id: string; target_type: string; target_id: string; evaluation: QualityEvaluation }>;
   provenance: Record<string, unknown> | null;
   replaySnapshots: ReplaySnapshot[];
   workflowRuns: WorkflowRunRecord[];
   onRoute: () => Promise<void>;
   onPromote: () => Promise<void>;
+  onInspectCompression: (packet: CompressionPreview | null, label: string, compare?: boolean) => void;
+  onLookupCompression: (targetType: string, targetId: string, label: string, compare?: boolean) => Promise<void>;
 }) {
   return (
     <div className="drawer-body">
@@ -645,26 +761,91 @@ function HistoryPanel({
         </button>
       </div>
       <div className="chat-list">
-        {chat.map((message) => (
-          <article key={message.id} className="chat-item">
-            <div>
-              <span>{message.origin}</span>
-              <span>{message.branch}</span>
-              <span>{message.format}</span>
-            </div>
-            <p>{message.content}</p>
-          </article>
-        ))}
+        {chat.map((message) => {
+          const packet = maybeCompression(message.metadata?.compression);
+          return (
+            <article
+              key={message.id}
+              className={`chat-item ${packet ? "inspectable" : ""}`}
+              role={packet ? "button" : undefined}
+              tabIndex={packet ? 0 : undefined}
+              onKeyDown={packet ? onEnterOrSpace(() => onInspectCompression(packet, `chat:${message.id}`)) : undefined}
+              onClick={() => {
+                if (packet) {
+                  onInspectCompression(packet, `chat:${message.id}`);
+                }
+              }}
+            >
+              <div>
+                <span>{message.origin}</span>
+                <span>{message.branch}</span>
+                <span>{message.format}</span>
+                {packet && <span>compression</span>}
+              </div>
+              <p>{message.content}</p>
+              {packet && (
+                <div className="item-actions">
+                  <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onInspectCompression(packet, `chat:${message.id}`);
+                    }}
+                  >
+                    Inspect
+                  </button>
+                  <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onInspectCompression(packet, `chat:${message.id}`, true);
+                    }}
+                  >
+                    Compare
+                  </button>
+                </div>
+              )}
+            </article>
+          );
+        })}
       </div>
       <h2>Ledger</h2>
       <div className="ledger-list">
-        {ledger.slice(-6).map((entry) => (
-          <article key={`${entry.session_id}-${entry.entry_id}`} className="ledger-item">
+        {ledger.slice(-6).map((entry) => {
+          const packet = maybeCompression(entry.metadata?.compression);
+          return (
+          <article
+            key={`${entry.session_id}-${entry.entry_id}`}
+            className={`ledger-item ${packet ? "inspectable" : ""}`}
+            role="button"
+            tabIndex={0}
+            onKeyDown={onEnterOrSpace(() => void onLookupCompression("ledger_entry", entry.entry_id, `ledger:${entry.entry_id}`))}
+            onClick={() => void onLookupCompression("ledger_entry", entry.entry_id, `ledger:${entry.entry_id}`)}
+          >
             <strong>{entry.entry_id}</strong>
             <span>{entry.branch}</span>
             <p>{entry.raw_text}</p>
+            <div className="item-actions">
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  void onLookupCompression("ledger_entry", entry.entry_id, `ledger:${entry.entry_id}`);
+                }}
+              >
+                Inspect
+              </button>
+              {packet && (
+                <button
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onInspectCompression(packet, `ledger:${entry.entry_id}`, true);
+                  }}
+                >
+                  Compare
+                </button>
+              )}
+            </div>
           </article>
-        ))}
+          );
+        })}
       </div>
       {provenance && (
         <div className="provenance-box">
@@ -684,11 +865,67 @@ function HistoryPanel({
       </div>
       <h2>Workflow Runs</h2>
       <div className="trace-list">
-        {workflowRuns.slice(-4).map((run) => (
-          <article key={run.id} className={`trace-item ${run.status}`}>
-            <strong>{run.workflow_id}</strong>
-            <span>{run.created_at}</span>
-            <code>{run.status}</code>
+        {workflowRuns.slice(-4).map((run) => {
+          const packets = collectCompressionPackets(run, `workflow:${run.id}`);
+          return (
+            <article
+              key={run.id}
+              className={`trace-item ${run.status} ${packets.length ? "inspectable" : ""}`}
+              role="button"
+              tabIndex={0}
+              onKeyDown={onEnterOrSpace(() => void onLookupCompression("workflow_run", run.id, `workflow:${run.id}`))}
+              onClick={() => void onLookupCompression("workflow_run", run.id, `workflow:${run.id}`)}
+            >
+              <strong>{run.workflow_id}</strong>
+              <span>{run.created_at}</span>
+              <code>{run.status}</code>
+              {packets.length > 0 && (
+                <div className="item-actions trace-actions">
+                  <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onInspectCompression(packets[0].packet, packets[0].label);
+                    }}
+                  >
+                    Inspect
+                  </button>
+                  {packets[1] && (
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onInspectCompression(packets[1].packet, packets[1].label, true);
+                      }}
+                    >
+                      Compare
+                    </button>
+                  )}
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+      <h2>Provider Metrics</h2>
+      <div className="ledger-list">
+        {metrics.slice(-4).map((item) => (
+          <article key={item.id} className="ledger-item">
+            <strong>{String(item.metric.provider_model ?? item.event_id ?? item.id)}</strong>
+            <span>{item.metric.provider_metrics_available ? "provider metrics available" : "provider metrics unavailable"}</span>
+            <p>
+              latency {metricText(item.metric, "provider_total_latency_ms", " ms", 1)} | generation {metricText(item.metric, "generation_tokens_per_second", "", 1)} t/s
+            </p>
+          </article>
+        ))}
+      </div>
+      <h2>Quality Eval</h2>
+      <div className="ledger-list">
+        {qualityRecords.slice(-4).map((item) => (
+          <article key={item.id} className="ledger-item">
+            <strong>{item.target_type}</strong>
+            <span>{item.target_id}</span>
+            <p>
+              score {qualityLabel(item.evaluation)} | {item.evaluation.modes.join(", ")}
+            </p>
           </article>
         ))}
       </div>
@@ -699,19 +936,24 @@ function HistoryPanel({
 function ConnectorPanel({
   connectors,
   branch,
+  runtime,
   onRun,
   onSave,
-  onDelete
+  onDelete,
+  onEnsureRuntime
 }: {
   connectors: ConnectorRecord[];
   branch: string;
+  runtime: LocalRuntimeStatus | null;
   onRun: (connectorType: string, config: Record<string, unknown>) => Promise<void>;
   onSave: (connector: ConnectorRecord) => Promise<void>;
   onDelete: (connectorId: string) => Promise<void>;
+  onEnsureRuntime: (config: Record<string, unknown>) => Promise<void>;
 }) {
   const inbound = [
     { type: "manual_text", label: "Manual text" },
     { type: "openai_compatible_llm", label: "OpenAI-compatible" },
+    { type: "lm_studio", label: "LM Studio gemma-4" },
     { type: "ollama_local_model", label: "Ollama/local" },
     { type: "file_input", label: "File input" },
     { type: "folder_watcher", label: "Folder watcher" },
@@ -724,8 +966,67 @@ function ConnectorPanel({
   const [connectorType, setConnectorType] = useState("openai_compatible_llm");
   const [prompt, setPrompt] = useState("connector.demo = deterministic mock ingress");
   const [connectorName, setConnectorName] = useState("Mock ingress");
+  const [ollamaConfig, setOllamaConfig] = useState<Record<string, unknown>>(defaultOllamaConfig);
+
+  function setOllamaField(key: string, value: unknown) {
+    setOllamaConfig((current) => ({ ...current, [key]: value }));
+  }
+
+  function applyDeterministicPreset() {
+    setOllamaConfig((current) => ({
+      ...current,
+      mock: false,
+      stream: false,
+      deterministic_benchmark: true,
+      seed: current.seed === "" ? 0 : current.seed,
+      temperature: 0,
+      top_p: 1,
+      top_k: 40,
+      num_predict: 128
+    }));
+  }
+
+  const nonDefaultSampling = ["seed", "temperature", "top_p", "top_k", "min_p", "repeat_penalty", "repeat_last_n", "num_ctx", "num_predict", "stop"].some(
+    (key) => String(ollamaConfig[key] ?? "") !== String(defaultOllamaConfig[key] ?? "")
+  );
+  const numberConstraints: Record<string, { min?: number; max?: number; step?: number }> = {
+    seed: { step: 1 },
+    temperature: { min: 0, step: 0.05 },
+    top_p: { min: 0, max: 1, step: 0.01 },
+    top_k: { min: 0, step: 1 },
+    min_p: { min: 0, max: 1, step: 0.01 },
+    repeat_penalty: { min: 0, step: 0.05 },
+    repeat_last_n: { min: -1, step: 1 },
+    num_ctx: { min: 1, step: 1 },
+    num_predict: { min: -2, step: 1 }
+  };
 
   function runConfigFor(type: string): Record<string, unknown> {
+    if (type === "lm_studio") {
+      return {
+        base_url: "http://127.0.0.1:1234/v1",
+        model: "gemma-4-e4b-uncensored-hauhaucs-aggressive",
+        prompt,
+        text: prompt,
+        mock: false,
+        temperature: 0,
+        branch
+      };
+    }
+    if (type === "ollama_local_model") {
+      const stop = String(ollamaConfig.stop ?? "")
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean);
+      return {
+        ...ollamaConfig,
+        prompt,
+        text: prompt,
+        ...(stop.length > 0 ? { stop } : {}),
+        auto_start: true,
+        branch
+      };
+    }
     if (type === "file_input") {
       return { path: prompt, content_type: "text/plain", branch };
     }
@@ -742,6 +1043,16 @@ function ConnectorPanel({
   }
 
   const runConfig = runConfigFor(connectorType);
+
+  function selectConnectorType(type: string) {
+    setConnectorType(type);
+    if (type === "lm_studio" && connectorName === "Mock ingress") {
+      setConnectorName("LM Studio gemma-4");
+    }
+    if (type === "ollama_local_model" && connectorName === "Mock ingress") {
+      setConnectorName("Ollama benchmark");
+    }
+  }
 
   function connectorDraft(): ConnectorRecord {
     const id = connectorName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "connector";
@@ -762,7 +1073,7 @@ function ConnectorPanel({
         <h2>Inbound</h2>
         <label className="stacked-field">
           Type
-          <select value={connectorType} onChange={(event) => setConnectorType(event.target.value)}>
+          <select value={connectorType} onChange={(event) => selectConnectorType(event.target.value)}>
             {inbound.map((item) => (
               <option key={item.type} value={item.type}>
                 {item.label}
@@ -778,12 +1089,115 @@ function ConnectorPanel({
           Payload
           <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} />
         </label>
+        {connectorType === "ollama_local_model" && (
+          <div className="sampling-controls">
+            <div className="sampling-header">
+              <h2>Ollama Settings</h2>
+              {nonDefaultSampling && <span className="connector-pill">non-default sampling</span>}
+            </div>
+            <div className="runtime-status">
+              <strong>{runtime?.healthy ? "Ollama ready" : "Ollama not running"}</strong>
+              <span>{runtime?.base_url ?? String(ollamaConfig.base_url ?? "http://127.0.0.1:11434")}</span>
+              {runtime?.last_error && <span>{runtime.last_error}</span>}
+              <button onClick={() => void onEnsureRuntime(runConfigFor("ollama_local_model"))}>
+                <Play size={16} /> Start Local Server
+              </button>
+            </div>
+            <label className="stacked-field">
+              Base URL
+              <input value={String(ollamaConfig.base_url ?? "")} onChange={(event) => setOllamaField("base_url", event.target.value)} />
+            </label>
+            <label className="stacked-field">
+              Model
+              <input value={String(ollamaConfig.model ?? "")} onChange={(event) => setOllamaField("model", event.target.value)} />
+            </label>
+            <label className="stacked-field">
+              System
+              <textarea value={String(ollamaConfig.system ?? "")} onChange={(event) => setOllamaField("system", event.target.value)} />
+            </label>
+            <div className="toggle-row">
+              <label>
+                <input type="checkbox" checked={Boolean(ollamaConfig.mock)} onChange={(event) => setOllamaField("mock", event.target.checked)} />
+                Mock
+              </label>
+              <label>
+                <input type="checkbox" checked={Boolean(ollamaConfig.raw)} onChange={(event) => setOllamaField("raw", event.target.checked)} />
+                Raw
+              </label>
+              <label>
+                <input type="checkbox" checked={Boolean(ollamaConfig.stream)} onChange={(event) => setOllamaField("stream", event.target.checked)} />
+                Stream
+              </label>
+            </div>
+            <label className="stacked-field">
+              Format
+              <select value={String(ollamaConfig.format ?? "plain")} onChange={(event) => setOllamaField("format", event.target.value)}>
+                <option value="plain">plain</option>
+                <option value="json">json</option>
+                <option value="schema">schema</option>
+              </select>
+            </label>
+            <details className="advanced-panel" open>
+              <summary>Advanced sampling</summary>
+              <div className="sampling-grid">
+                {[
+                  ["seed", "Seed"],
+                  ["temperature", "Temperature"],
+                  ["top_p", "Top P"],
+                  ["top_k", "Top K"],
+                  ["min_p", "Min P"],
+                  ["repeat_penalty", "Repeat Penalty"],
+                  ["repeat_last_n", "Repeat Last N"],
+                  ["num_ctx", "Context"],
+                  ["num_predict", "Predict"]
+                ].map(([key, label]) => (
+                  <label key={key} className="stacked-field">
+                    {label}
+                    <input
+                      type="number"
+                      min={numberConstraints[key]?.min}
+                      max={numberConstraints[key]?.max}
+                      step={numberConstraints[key]?.step}
+                      value={String(ollamaConfig[key] ?? "")}
+                      onChange={(event) => {
+                        if (event.target.value === "") {
+                          setOllamaField(key, "");
+                          return;
+                        }
+                        const next = Number(event.target.value);
+                        if (Number.isFinite(next)) {
+                          setOllamaField(key, next);
+                        }
+                      }}
+                    />
+                  </label>
+                ))}
+              </div>
+              <label className="stacked-field">
+                Stop
+                <textarea value={String(ollamaConfig.stop ?? "")} onChange={(event) => setOllamaField("stop", event.target.value)} />
+              </label>
+              <label className="stacked-field">
+                Keep alive
+                <input value={String(ollamaConfig.keep_alive ?? "")} onChange={(event) => setOllamaField("keep_alive", event.target.value)} />
+              </label>
+            </details>
+            <div className="inline-actions">
+              <button onClick={applyDeterministicPreset}>
+                <Settings size={16} /> Benchmark Preset
+              </button>
+              <button onClick={() => setOllamaConfig(defaultOllamaConfig)}>
+                <RefreshCw size={16} /> Reset
+              </button>
+            </div>
+          </div>
+        )}
         <div className="inline-actions">
           <button onClick={() => void onRun(connectorType, runConfig)}>
             <Play size={16} /> Run through Core
           </button>
           <button onClick={() => void onSave(connectorDraft())}>
-            <Save size={16} /> Save
+            <Save size={16} /> Save Profile
           </button>
         </div>
       </section>
@@ -862,7 +1276,8 @@ function FlowStudio({
   onSave,
   onClone,
   onExport,
-  onImport
+  onImport,
+  onInspectCompression
 }: {
   workflow: Workflow;
   setWorkflow: (workflow: Workflow) => void;
@@ -875,9 +1290,12 @@ function FlowStudio({
   onClone: () => Promise<void>;
   onExport: () => void;
   onImport: () => void;
+  onInspectCompression: (packet: CompressionPreview | null, label: string, compare?: boolean) => void;
 }) {
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
+  const [edgeSource, setEdgeSource] = useState(selectedNode.id);
+  const [edgeTarget, setEdgeTarget] = useState(selectedNode.id);
 
   function updateNode(nodeId: string, patch: Partial<WorkflowNode>) {
     setWorkflow({
@@ -915,6 +1333,21 @@ function FlowStudio({
       edges: workflow.edges.filter((edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id)
     });
     setSelectedNodeId(remaining[0].id);
+  }
+
+  function addEdge() {
+    if (!edgeSource || !edgeTarget || edgeSource === edgeTarget) {
+      return;
+    }
+    const id = `e-${edgeSource}-${edgeTarget}`;
+    if (workflow.edges.some((edge) => edge.source === edgeSource && edge.target === edgeTarget)) {
+      return;
+    }
+    setWorkflow({ ...workflow, edges: [...workflow.edges, { id, source: edgeSource, target: edgeTarget }] });
+  }
+
+  function deleteEdge(edgeId: string) {
+    setWorkflow({ ...workflow, edges: workflow.edges.filter((edge) => edge.id !== edgeId) });
   }
 
   function pointerMove(event: React.PointerEvent) {
@@ -1046,15 +1479,64 @@ function FlowStudio({
               }}
             />
           </label>
-          <h2>Trace</h2>
-          <div className="trace-list">
-            {(runResult?.trace ?? []).map((item) => (
-              <article key={String(item.node_id)} className={`trace-item ${String(item.status)}`}>
-                <strong>{String(item.node_id)}</strong>
-                <span>{String(item.type)}</span>
-                <code>{String(item.status)}</code>
+          <h2>Edges</h2>
+          <div className="edge-editor">
+            <select value={edgeSource} onChange={(event) => setEdgeSource(event.target.value)}>
+              {workflow.nodes.map((node) => (
+                <option key={node.id} value={node.id}>
+                  {node.id}
+                </option>
+              ))}
+            </select>
+            <select value={edgeTarget} onChange={(event) => setEdgeTarget(event.target.value)}>
+              {workflow.nodes.map((node) => (
+                <option key={node.id} value={node.id}>
+                  {node.id}
+                </option>
+              ))}
+            </select>
+            <button onClick={addEdge}>Add Edge</button>
+          </div>
+          <div className="edge-list">
+            {workflow.edges.map((edge) => (
+              <article key={edge.id}>
+                <span>
+                  {edge.source} -&gt; {edge.target}
+                </span>
+                <button onClick={() => deleteEdge(edge.id)}>Delete</button>
               </article>
             ))}
+          </div>
+          <h2>Trace</h2>
+          {runResult?.quality_eval && (
+            <div className="quality-box">
+              <strong>Quality {qualityLabel(runResult.quality_eval)}</strong>
+              <span>{runResult.quality_eval.modes.join(", ")}</span>
+            </div>
+          )}
+          <div className="trace-list">
+            {(runResult?.trace ?? []).map((item) => {
+              const packet = maybeCompression(item.compression);
+              const provider = item.provider_metrics as ProviderMetrics | undefined;
+              return (
+                <article key={String(item.node_id)} className={`trace-item ${String(item.status)}`}>
+                  <strong>{String(item.node_id)}</strong>
+                  <span>{String(item.type)}</span>
+                  <code>{String(item.status)}</code>
+                  {(packet || provider) && (
+                    <div className="trace-detail">
+                      {provider && <span>latency {formatMetric(provider.derived.provider_total_latency_ms, " ms", 1)}</span>}
+                      {provider && <span>gen {formatMetric(provider.derived.generation_tokens_per_second, "", 1)} t/s</span>}
+                      {packet && (
+                        <button onClick={() => onInspectCompression(packet, `workflow:${runResult?.run_id ?? "current"}.${String(item.node_id)}`)}>
+                          Inspect compression
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </aside>
       </div>

@@ -33,6 +33,23 @@ Workflow runs are persisted in SQLite and exposed at
 events, node outputs, final output, and a run id. Flow Studio uses this history
 for execution inspection.
 
+Connector nodes preserve provider metrics in trace events and node outputs when
+the provider returns them. `core_lm` nodes pass upstream provider metrics into
+the canonical ingest path so ledger metadata, chat metadata, and metrics history
+retain the same packet.
+
+Each workflow run also receives a structural quality evaluation packet. The
+workflow-level checks cover node success/failure counts, final output
+availability, outbound delivery failures, and pipeline completeness. Node-level
+ingest quality packets remain attached to their Core LM events.
+
+Compression metadata from compression nodes and Core LM ingestion is inspectable
+from Flow Studio run details and through:
+
+```text
+GET /api/compression?session_id=default&target_type=workflow_run&target_id=<run_id>
+```
+
 Current samples:
 
 - `sample_workflows/canonical_core_flow.json`

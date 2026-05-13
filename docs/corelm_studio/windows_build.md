@@ -43,5 +43,16 @@ The Python service source is copied to `resources/corelm_service` outside
 packaged builds. Sample workflows, connector configs, prompt templates,
 `examples/demo_session.json`, and example outbound packets are copied into the
 same resource tree for offline demos.
+
+The packaged app includes the Python sidecar runtime, not third-party model
+servers or model weights. Real Ollama runs require Ollama to be installed on the
+machine. When available, the sidecar can start `ollama serve` on demand and stop
+the process it owns when the app exits. LM Studio remains an externally managed
+desktop application.
+
+Packaged service state uses the Electron user-data directory through
+`CORELM_STUDIO_DATA_DIR`. Source-mode development can still override that
+location explicitly.
+
 Final installer signing and Windows Defender reputation checks are release
 operations outside this local development environment.

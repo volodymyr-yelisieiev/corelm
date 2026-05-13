@@ -68,6 +68,65 @@ export type ConnectorRunResult = {
   metadata: Record<string, unknown>;
 };
 
+export type ProviderMetrics = {
+  version: string;
+  provider: string;
+  provider_metrics_available: boolean;
+  native: Record<string, unknown>;
+  local: Record<string, number | null>;
+  derived: Record<string, number | null>;
+  metric_sources: Record<string, string>;
+  raw_usage: Record<string, unknown>;
+};
+
+export type QualityEvaluation = {
+  version: string;
+  modes: string[];
+  summary_score: number | null;
+  checks: Record<string, { passed: boolean | null; value: unknown; applicable: boolean; detail?: string | null }>;
+  booleans: Record<string, boolean>;
+  numeric_values: Record<string, number>;
+  reference_provided: boolean;
+  notes: string;
+};
+
+export type LocalRuntimeStatus = {
+  provider: string;
+  base_url: string;
+  healthy: boolean;
+  managed?: boolean;
+  adopted?: boolean;
+  owned?: boolean;
+  command?: string[] | null;
+  last_error?: string | null;
+};
+
+export type CompressionPreview = {
+  raw_text: string;
+  sanitized_text?: string | null;
+  cleaned_text?: string | null;
+  deduped_text?: string | null;
+  canonicalized_text?: string | null;
+  canonical_text: string;
+  steps: string[];
+  annotations: Array<Record<string, unknown>>;
+  structured_extraction?: Array<Record<string, unknown>>;
+  digest: string;
+  compression_ratio: number;
+  raw_length?: number;
+  canonical_length?: number;
+  token_proxy_before?: number;
+  token_proxy_after?: number;
+  contradiction_candidates: string[];
+};
+
+export type CompressionLookup = {
+  session_id: string;
+  target_type: string;
+  target_id: string;
+  packets: Array<{ label: string; packet: CompressionPreview }>;
+};
+
 export type LedgerEntryCore = {
   entry_id: string;
   event_id: string;
@@ -99,7 +158,7 @@ export type MetricRecord = {
   session_id: string;
   event_id: string;
   created_at: string;
-  metric: Record<string, number | string | boolean>;
+  metric: Record<string, unknown>;
 };
 
 export type WorkflowNode = {
@@ -131,6 +190,7 @@ export type WorkflowRunResult = {
   trace: Array<Record<string, unknown>>;
   outputs: Record<string, Record<string, unknown>>;
   final: string;
+  quality_eval?: QualityEvaluation;
 };
 
 export type WorkflowRunRecord = {

@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
-from .security import sanitize_obj
+from .security import sanitize_obj, sanitize_text
 
 
 def utc_now() -> str:
@@ -22,6 +22,14 @@ def loads_json(value: str | None, fallback: Any = None) -> Any:
     if not value:
         return fallback
     return json.loads(value)
+
+
+def sanitize_secret_ref(value: Any) -> str:
+    raw = str(value or "").strip()
+    sanitized = sanitize_text(raw)
+    if not sanitized or sanitized != raw or sanitized == "[REDACTED_SECRET]":
+        return "REDACTED_SECRET_REF"
+    return sanitized
 
 
 class StudioDB:
@@ -143,6 +151,17 @@ class StudioDB:
                     session_id TEXT NOT NULL,
                     event_id TEXT,
                     metric_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS quality_evaluations (
+                    id TEXT PRIMARY KEY,
+                    session_id TEXT NOT NULL,
+                    target_type TEXT NOT NULL,
+                    target_id TEXT NOT NULL,
+                    event_id TEXT,
+                    evaluation_json TEXT NOT NULL,
                     created_at TEXT NOT NULL,
                     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
                 );
@@ -304,7 +323,7 @@ class StudioDB:
         now = utc_now()
         connector_id = connector["id"]
         safe_config = sanitize_obj(connector.get("config", {}))
-        secret_refs = [str(item) for item in connector.get("secret_refs", [])]
+        secret_refs = [sanitize_secret_ref(item) for item in connector.get("secret_refs", [])]
         existing = self.query_one("SELECT id FROM connectors WHERE id = ?", (connector_id,))
         params = (
             connector_id,
@@ -355,6 +374,8 @@ class StudioDB:
         payload["config"] = loads_json(row["config_json"], {})
         payload["secret_refs"] = loads_json(row["secret_refs_json"], [])
         payload["enabled"] = bool(row["enabled"])
+        payload.pop("config_json", None)
+        payload.pop("secret_refs_json", None)
         secrets = self.query_all("SELECT secret_name, storage_backend FROM secrets_metadata WHERE connector_id = ?", (connector_id,))
         payload["secrets_metadata"] = [dict(item) for item in secrets]
         return payload
@@ -442,6 +463,65 @@ class StudioDB:
         )
         runs = [run for row in rows if (run := self.get_workflow_run(row["id"]))]
         return list(reversed(runs))
+
+    def record_quality_evaluation(
+        self,
+        session_id: str,
+        target_type: str,
+        target_id: str,
+        evaluation: dict[str, Any],
+        event_id: str | None = None,
+    ) -> dict[str, Any]:
+        now = utc_now()
+        evaluation_id = f"quality-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+        self.execute(
+            """
+            INSERT INTO quality_evaluations
+            (id, session_id, target_type, target_id, event_id, evaluation_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                evaluation_id,
+                session_id,
+                target_type,
+                target_id,
+                event_id,
+                dumps_json(sanitize_obj(evaluation)),
+                now,
+            ),
+        )
+        return self.get_quality_evaluation(evaluation_id) or {}
+
+    def get_quality_evaluation(self, evaluation_id: str) -> dict[str, Any] | None:
+        row = self.query_one("SELECT * FROM quality_evaluations WHERE id = ?", (evaluation_id,))
+        if not row:
+            return None
+        payload = dict(row)
+        payload["evaluation"] = loads_json(row["evaluation_json"], {})
+        return payload
+
+    def list_quality_evaluations(
+        self,
+        session_id: str = "default",
+        target_type: str | None = None,
+        target_id: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        clauses = ["session_id = ?"]
+        params: list[Any] = [session_id]
+        if target_type:
+            clauses.append("target_type = ?")
+            params.append(target_type)
+        if target_id:
+            clauses.append("target_id = ?")
+            params.append(target_id)
+        params.append(limit)
+        rows = self.query_all(
+            f"SELECT id FROM quality_evaluations WHERE {' AND '.join(clauses)} ORDER BY created_at DESC LIMIT ?",
+            params,
+        )
+        evaluations = [item for row in rows if (item := self.get_quality_evaluation(row["id"]))]
+        return list(reversed(evaluations))
 
     def get_settings(self) -> dict[str, Any]:
         rows = self.query_all("SELECT key, value_json FROM settings ORDER BY key")

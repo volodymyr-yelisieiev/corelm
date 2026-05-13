@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import urllib.request
 import uuid
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from .db import utc_now
 from .formatters import prompt_template
+from .local_runtime import ensure_runtime_or_raise
 from .security import sanitize_obj, sanitize_text
 
 
@@ -21,6 +24,20 @@ def _post_json(url: str, payload: dict[str, Any], headers: dict[str, str], timeo
     )
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
+
+
+def _is_local_url(url: str) -> bool:
+    host = (urlparse(url).hostname or "").lower()
+    return host in {"127.0.0.1", "localhost", "::1"}
+
+
+def _read_bool(config: dict[str, Any], key: str, default: bool) -> bool:
+    value = config.get(key, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str) and value.lower() in {"true", "false"}:
+        return value.lower() == "true"
+    return bool(value)
 
 
 def route_outbound(
@@ -67,17 +84,25 @@ def route_outbound(
         if raw_config.get("mock", True):
             return receipt | {"status": "mock-delivered", "target": safe_config.get("model", "mock-openai")}
         base_url = str(raw_config.get("base_url") or "https://api.openai.com/v1").rstrip("/")
+        api_key = str(raw_config.get("api_key") or os.getenv(str(raw_config.get("api_key_env") or "OPENAI_API_KEY"), ""))
+        if api_key == "[REDACTED_SECRET]":
+            api_key = ""
+        if not api_key and not _is_local_url(base_url):
+            raise ValueError("openai outbound requires api_key or OPENAI_API_KEY outside local LM Studio endpoints")
         payload = {
             "model": raw_config.get("model", "gpt-4.1-mini"),
             "messages": [{"role": "user", "content": packet}],
-            "temperature": 0,
+            "temperature": raw_config.get("temperature", 0),
         }
-        body = _post_json(f"{base_url}/chat/completions", payload, {"Authorization": f"Bearer {raw_config['api_key']}"})
+        headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+        body = _post_json(f"{base_url}/chat/completions", payload, headers)
         return receipt | {"status": "delivered", "response": sanitize_obj(body)}
     if target_type in {"local_model_outbound", "local_model", "ollama"}:
-        if raw_config.get("mock", True):
+        if _read_bool(raw_config, "mock", True):
             return receipt | {"status": "mock-delivered", "target": safe_config.get("model", "mock-local")}
         base_url = str(raw_config.get("base_url") or "http://127.0.0.1:11434").rstrip("/")
+        if _read_bool(raw_config, "auto_start", True):
+            ensure_runtime_or_raise("ollama", base_url, raw_config)
         body = _post_json(
             f"{base_url}/api/generate",
             {"model": raw_config.get("model", "llama3.1"), "prompt": packet, "stream": False},

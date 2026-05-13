@@ -7,23 +7,32 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from .compression import preprocess_payload
 from .connectors import connector_catalog, run_inbound_connector
+from .local_runtime import ensure_runtime, runtime_status, stop_owned_runtimes
 from .outbound import route_outbound
 from .schemas import (
     ChatPromoteRequest,
+    CompressionPreviewRequest,
     ConnectorIngestRequest,
     ChatRouteRequest,
     ConnectorRunRequest,
     ConnectorSaveRequest,
     IngestRequest,
+    LocalRuntimeEnsureRequest,
     OutboundRouteRequest,
     SessionCreateRequest,
     SettingsUpdateRequest,
     WorkflowRunRequest,
     WorkflowSaveRequest,
 )
+from .security import sanitize_text
 from .studio_core import StudioCore
 from .workflow import WorkflowEngine
+
+
+def safe_error(exc: Exception) -> str:
+    return sanitize_text(str(exc))
 
 
 def create_app(db_path: str | Path | None = None) -> FastAPI:
@@ -36,12 +45,13 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         try:
             yield
         finally:
+            stop_owned_runtimes()
             core.close()
 
     app = FastAPI(title="Core LM Studio Sidecar", version="0.1.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "app://core-lm-studio"],
+        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "app://core-lm-studio", "null"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -67,7 +77,7 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         try:
             return run_inbound_connector(request.connector_type, request.config, request.branch).to_dict()
         except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
 
     @app.post("/api/connectors/run-ingest")
     def run_connector_ingest(request: ConnectorIngestRequest) -> dict[str, Any]:
@@ -82,16 +92,18 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
                 fmt=request.format,
                 compression=request.compression,
                 annotations=request.annotations,
+                evaluator_config=request.evaluator_config or request.config.get("evaluator_config", {}),
             )
             return {"connector": connector_result.to_dict(), "ingest": ingest}
         except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
 
     @app.get("/api/connectors/types")
     def connectors() -> dict[str, Any]:
         return {
             "inbound": [
                 "openai_compatible_llm",
+                "lm_studio",
                 "ollama_local_model",
                 "file_input",
                 "folder_watcher",
@@ -145,9 +157,42 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
                 fmt=request.format,
                 compression=request.compression,
                 annotations=request.annotations,
+                evaluator_config=request.evaluator_config,
             )
         except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+
+    @app.post("/api/compression/preview")
+    def compression_preview(request: CompressionPreviewRequest) -> dict[str, Any]:
+        try:
+            return preprocess_payload(
+                request.text,
+                request.branch,
+                request.compression,
+                request.annotations,
+            ).to_dict()
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+
+    @app.get("/api/compression")
+    def compression_lookup(target_type: str, target_id: str, session_id: str = "default") -> dict[str, Any]:
+        try:
+            return core.compression_packet(session_id, target_type, target_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+
+    @app.get("/api/local-runtimes")
+    def local_runtimes(provider: str = "ollama", base_url: str | None = None) -> dict[str, Any]:
+        return runtime_status(provider, base_url)
+
+    @app.post("/api/local-runtimes/{provider}/ensure")
+    def ensure_local_runtime(provider: str, request: LocalRuntimeEnsureRequest) -> dict[str, Any]:
+        target_provider = request.provider or provider
+        default_base_url = "http://127.0.0.1:11434" if target_provider == "ollama" else "http://127.0.0.1:1234/v1"
+        try:
+            return ensure_runtime(target_provider, request.base_url or str(request.config.get("base_url") or default_base_url), request.config)
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
 
     @app.get("/api/chat")
     def chat(session_id: str = "default", limit: int = Query(default=100, ge=1, le=500)) -> list[dict[str, Any]]:
@@ -158,13 +203,16 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         message = core.get_chat_message(message_id)
         if not message:
             raise HTTPException(status_code=404, detail="chat message not found")
-        receipt = route_outbound(
-            request.target_type,
-            message["content"],
-            request.config,
-            request.packet_type,
-            {"message_id": message_id, "session_id": session_id, "branch": message["branch"]},
-        )
+        try:
+            receipt = route_outbound(
+                request.target_type,
+                message["content"],
+                request.config,
+                request.packet_type,
+                {"message_id": message_id, "session_id": session_id, "branch": message["branch"]},
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
         core.record_chat_message(
             session_id=session_id,
             origin="outbound",
@@ -183,7 +231,7 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         try:
             return core.promote_chat(session_id, message_id, request.branch, request.subject, request.attribute, request.tags)
         except ValueError as exc:
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
+            raise HTTPException(status_code=404, detail=safe_error(exc)) from exc
 
     @app.get("/api/ledger")
     def ledger(session_id: str = "default", limit: int = Query(default=100, ge=1, le=500)) -> list[dict[str, Any]]:
@@ -199,6 +247,15 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
     @app.get("/api/metrics")
     def metrics(session_id: str = "default", limit: int = Query(default=100, ge=1, le=500)) -> list[dict[str, Any]]:
         return core.metrics(session_id, limit)
+
+    @app.get("/api/quality")
+    def quality(
+        session_id: str = "default",
+        target_type: str | None = None,
+        target_id: str | None = None,
+        limit: int = Query(default=100, ge=1, le=500),
+    ) -> list[dict[str, Any]]:
+        return core.db.list_quality_evaluations(session_id, target_type, target_id, limit)
 
     @app.get("/api/provenance")
     def provenance(session_id: str = "default", branch: str = "corelm", subject: str = "project", attribute: str = "name") -> dict[str, Any]:
@@ -248,8 +305,10 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         workflow = request.workflow or core.db.get_workflow(workflow_id)
         if not workflow:
             raise HTTPException(status_code=404, detail="workflow not found")
-        result = engine.run(workflow, request.session_id, request.branch, request.inputs)
-        return result
+        try:
+            return engine.run(workflow, request.session_id, request.branch, request.inputs)
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
 
     @app.post("/api/workflows/{workflow_id}/clone")
     def clone_workflow(workflow_id: str) -> dict[str, Any]:
@@ -267,7 +326,7 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
         try:
             return route_outbound(request.target_type, request.content, request.config, request.packet_type, request.metadata)
         except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
 
     @app.get("/api/outbound/templates")
     def outbound_templates() -> list[str]:

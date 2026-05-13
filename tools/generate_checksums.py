@@ -7,7 +7,7 @@ root = Path(__file__).resolve().parents[1]
 out = root / 'reports' / 'archive_checksums.txt'
 ignored_parts = {
     '.git', 'archives', '.pytest_cache', '__pycache__', '.venv', 'venv', 'build', 'dist',
-    'node_modules', 'dist_windows', '.corelm_studio', '.corelm_studio_test',
+    'node_modules', 'runtime', 'dist_windows', '.corelm_studio', '.corelm_studio_test',
     '.corelm_studio_dev', 'exports', 'dist-electron',
     '.variant_edit', '.variant_wheel', '.local100_edit_venv', '.local100_wheel_venv', '.local100_wheelhouse'
 }

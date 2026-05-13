@@ -8,6 +8,8 @@ from .compression import preprocess_payload
 from .connectors import run_inbound_connector
 from .formatters import format_payload
 from .outbound import route_outbound
+from .quality import evaluate_quality
+from .security import sanitize_text
 
 
 def _incoming(edges: list[dict[str, Any]], node_id: str) -> list[str]:
@@ -57,13 +59,17 @@ class WorkflowEngine:
             node_id = node["id"]
             node_type = str(node["type"]).lower()
             config = dict(node.get("config", {}))
-            parent_values = [outputs[parent]["value"] for parent in _incoming(edges, node_id) if parent in outputs]
+            parent_outputs = [outputs[parent] for parent in _incoming(edges, node_id) if parent in outputs]
+            parent_values = [output["value"] for output in parent_outputs if "value" in output]
             current = parent_values[-1] if parent_values else last_value
+            upstream = parent_outputs[-1] if parent_outputs else {}
+            upstream_metadata = upstream.get("metadata", {}) if isinstance(upstream.get("metadata"), dict) else {}
             event: dict[str, Any] = {"node_id": node_id, "type": node_type, "status": "ok"}
             try:
                 if node_type in {
                     "manual_text_input",
                     "openai_compatible_llm",
+                    "lm_studio",
                     "ollama_local_model",
                     "file_input",
                     "folder_watcher",
@@ -77,6 +83,8 @@ class WorkflowEngine:
                     result = run_inbound_connector(connector_type, connector_config, branch=branch)
                     value = result.normalized_payload or result.raw_payload
                     event["metadata"] = result.metadata
+                    if result.metadata.get("provider_metrics"):
+                        event["provider_metrics"] = result.metadata["provider_metrics"]
                     outputs[node_id] = {
                         "value": value,
                         "raw_payload": result.raw_payload,
@@ -111,21 +119,35 @@ class WorkflowEngine:
                     result = preprocess_payload(str(current), branch, {"steps": step_map[node_type]} | defaults | config)
                     value = result.canonical_text
                     event["compression"] = result.to_dict()
-                    outputs[node_id] = {"value": value, "compression": result.to_dict()}
+                    if upstream_metadata:
+                        event["metadata"] = upstream_metadata
+                    outputs[node_id] = {"value": value, "compression": result.to_dict(), "metadata": upstream_metadata}
                 elif node_type == "core_lm":
+                    source = {
+                        "source_id": node_id,
+                        "source_type": "workflow_node",
+                        "trust_level": config.get("trust_level", "medium"),
+                    }
+                    for key in ("provider_metrics", "sampling", "warnings", "runtime"):
+                        if upstream_metadata.get(key) is not None:
+                            source[key] = upstream_metadata[key]
                     ingest = self.core.ingest(
                         session_id=session_id,
                         branch=branch,
                         text=str(current),
-                        source={"source_id": node_id, "source_type": "workflow_node", "trust_level": config.get("trust_level", "medium")},
+                        source=source,
                         workflow_id=workflow_id,
                         fmt=str(config.get("format") or "markdown"),
                         compression=config.get("compression", {}),
                         annotations=config.get("annotations", []),
+                        evaluator_config=config.get("evaluator_config", {}),
                     )
                     value = ingest["chat_message"]["content"]
                     event["event_id"] = ingest["event_id"]
                     event["ledger_entry_id"] = ingest["ledger_entry"]["entry_id"]
+                    event["metrics"] = ingest["metrics"]
+                    event["quality_eval"] = ingest["quality_eval"]
+                    event["compression"] = ingest["compression"]
                     outputs[node_id] = {"value": value, "ingest": ingest}
                 elif node_type in {"format", "formatting"}:
                     fmt = str(config.get("format") or "markdown")
@@ -163,9 +185,10 @@ class WorkflowEngine:
                     event["status"] = "warning"
                     event["warning"] = outputs[node_id]["warning"]
             except Exception as exc:  # noqa: BLE001 - workflow trace should preserve node failures
-                outputs[node_id] = {"value": str(current), "error": str(exc)}
+                error = sanitize_text(str(exc))
+                outputs[node_id] = {"value": str(current), "error": error}
                 event["status"] = "error"
-                event["error"] = str(exc)
+                event["error"] = error
             trace.append(event)
             last_value = str(outputs[node_id].get("value") or last_value)
         result = {
@@ -175,6 +198,13 @@ class WorkflowEngine:
             "outputs": outputs,
             "final": last_value,
         }
+        workflow_quality = evaluate_quality(
+            last_value,
+            workflow.get("evaluator_config", {}),
+            workflow_trace=trace,
+            workflow_outputs={"final": last_value},
+        )
+        result["quality_eval"] = workflow_quality
         if hasattr(self.core, "db") and hasattr(self.core.db, "record_workflow_run"):
             run = self.core.db.record_workflow_run(
                 workflow_id,
@@ -185,4 +215,6 @@ class WorkflowEngine:
                 last_value,
             )
             result["run_id"] = run.get("id")
+            if result["run_id"] and hasattr(self.core.db, "record_quality_evaluation"):
+                self.core.db.record_quality_evaluation(session_id, "workflow_run", result["run_id"], workflow_quality)
         return result

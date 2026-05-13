@@ -13,6 +13,10 @@ Core LM full-spectrum research kit. It combines:
 - deterministic mocks for external LLM/local model/REST integrations.
 - sample workflows, connector configs, and programming-agent packets that can
   run offline through the canonical sidecar.
+- provider-native Ollama usage metrics, deterministic sampling controls,
+  structural quality evaluation, and a Compression Inspector for run metadata.
+- sidecar-managed Ollama startup for real local model runs when the `ollama`
+  binary is installed.
 
 Core LM remains the canonical state authority. External systems are perturbation
 sources or outbound targets, and the global chat is an interaction bus rather
@@ -44,12 +48,20 @@ npm run desktop:package:win
 PYTHONPATH=. python -m pytest -q
 ```
 
+Mock connectors run fully offline. For real Ollama runs, set the connector to
+`mock=false`; the sidecar probes the loopback Ollama API and starts
+`ollama serve` on demand when possible. Core LM Studio does not bundle Ollama,
+LM Studio, or model weights.
+
 Primary Studio docs:
 
 - `docs/corelm_studio/quickstart.md`
 - `docs/corelm_studio/architecture.md`
 - `docs/corelm_studio/connectors.md`
 - `docs/corelm_studio/workflows.md`
+- `docs/METRICS.md`
+- `docs/QUALITY_EVAL.md`
+- `docs/COMPRESSION_INSPECTOR.md`
 - `docs/corelm_studio/security_notes.md`
 - `docs/corelm_studio/replay_and_ledger.md`
 - `docs/corelm_studio/windows_build.md`

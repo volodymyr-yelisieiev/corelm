@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import pytest
+
 from services.core_service.corelm_studio.compression import chunk_text, preprocess_payload
 from fastapi.testclient import TestClient
 
 from services.core_service.corelm_studio.app import create_app
+from services.core_service.corelm_studio import connectors
+from services.core_service.corelm_studio.metrics import build_provider_metrics
+from services.core_service.corelm_studio.quality import evaluate_quality
 
 
 def test_ingest_updates_chat_ledger_metrics_and_replay(tmp_path):
@@ -34,6 +39,27 @@ def test_ingest_updates_chat_ledger_metrics_and_replay(tmp_path):
         assert len(ledger) == 1
         assert replay["ok"] is True
         assert provenance["value"].lower() == "core lm studio"
+
+
+def test_compression_preview_does_not_commit_to_ledger(tmp_path):
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/compression/preview",
+            json={
+                "branch": "corelm",
+                "text": " project.name = Core LM Studio \n project.name = Core LM Studio ",
+                "compression": {"steps": ["clean", "dedupe", "schema_extract", "hash_compress"], "allow_raw_commit": True},
+            },
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["raw_text"] == " project.name = Core LM Studio \n project.name = Core LM Studio "
+        assert payload["canonical_text"].startswith("sha256:")
+        assert payload["steps"] == ["sanitize", "clean", "dedupe", "schema_extract", "hash_compress"]
+        assert payload["annotations"][0]["subject"] == "project"
+        assert payload["compression_ratio"] > 0
+        assert client.get("/api/ledger").json() == []
 
 
 def test_workflow_runs_source_to_core_to_outbound(tmp_path):
@@ -95,6 +121,133 @@ def test_connector_and_outbound_mocks_are_deterministic(tmp_path):
         assert "Core LM Developer Handoff Packet" in outbound.json()["packet"]
 
 
+def test_ollama_provider_metrics_and_sampling_controls(monkeypatch):
+    observed = {}
+
+    def fake_ollama_generate(url, payload, timeout, request_start_ns):
+        observed["url"] = url
+        observed["payload"] = payload
+        observed["timeout"] = timeout
+        assert request_start_ns > 0
+        return (
+            {
+                "model": "llama3.1",
+                "created_at": "2026-05-13T00:00:00Z",
+                "response": "project.name = Core LM Studio",
+                "done": True,
+                "done_reason": "stop",
+                "total_duration": 2_000_000_000,
+                "load_duration": 100_000_000,
+                "prompt_eval_count": 10,
+                "prompt_eval_duration": 500_000_000,
+                "eval_count": 20,
+                "eval_duration": 1_000_000_000,
+            },
+            None,
+        )
+
+    monkeypatch.setattr(connectors, "_post_ollama_generate", fake_ollama_generate)
+    result = connectors.run_inbound_connector(
+        "ollama_local_model",
+        {
+            "mock": False,
+            "base_url": "http://127.0.0.1:11434",
+            "model": "llama3.1",
+            "prompt": "Return a fact.",
+            "seed": 7,
+            "temperature": 0,
+            "top_p": 1,
+            "top_k": 40,
+            "min_p": 0,
+            "repeat_penalty": 1.1,
+            "repeat_last_n": 64,
+            "num_ctx": 4096,
+            "num_predict": 128,
+            "stop": ["\n\n"],
+            "auto_start": False,
+        },
+    )
+
+    assert observed["url"] == "http://127.0.0.1:11434/api/generate"
+    assert observed["payload"]["stream"] is False
+    assert observed["payload"]["options"]["seed"] == 7
+    assert observed["payload"]["options"]["temperature"] == 0
+    metrics = result.metadata["provider_metrics"]
+    assert metrics["provider_metrics_available"] is True
+    assert metrics["native"]["total_duration"] == 2_000_000_000
+    assert metrics["derived"]["provider_total_latency_ms"] == 2000.0
+    assert metrics["derived"]["provider_load_latency_ms"] == 100.0
+    assert metrics["derived"]["prompt_tokens"] == 10
+    assert metrics["derived"]["completion_tokens"] == 20
+    assert metrics["derived"]["total_tokens"] == 30
+    assert metrics["derived"]["prompt_tokens_per_second"] == 20.0
+    assert metrics["derived"]["generation_tokens_per_second"] == 20.0
+    assert metrics["derived"]["end_to_end_tokens_per_second"] == 15.0
+    assert metrics["metric_sources"]["provider_total_latency_ms"] == "provider_native_derived"
+
+
+def test_provider_metrics_missing_and_zero_durations_are_nullable():
+    missing = build_provider_metrics("ollama", {}, 100, 200)
+    assert missing["provider_metrics_available"] is False
+    assert missing["derived"]["provider_total_latency_ms"] is None
+    assert missing["derived"]["prompt_tokens"] is None
+
+    zero = build_provider_metrics(
+        "ollama",
+        {"prompt_eval_count": 4, "prompt_eval_duration": 0, "eval_count": 6, "eval_duration": 0, "total_duration": 0},
+        100,
+        1_000_100,
+    )
+    assert zero["derived"]["prompt_tokens_per_second"] is None
+    assert zero["derived"]["generation_tokens_per_second"] is None
+    assert zero["derived"]["end_to_end_tokens_per_second"] is None
+
+
+def test_ollama_sampling_validation():
+    with pytest.raises(ValueError, match="requires seed"):
+        connectors.build_ollama_generate_payload({"deterministic_benchmark": True})
+    with pytest.raises(ValueError, match="top_p"):
+        connectors.build_ollama_generate_payload({"top_p": 2})
+
+    payload, metadata, warnings = connectors.build_ollama_generate_payload(
+        {"deterministic_benchmark": True, "seed": 0, "unsupported": "ignored"}
+    )
+    assert payload["stream"] is False
+    assert payload["options"]["seed"] == 0
+    assert payload["options"]["temperature"] == 0.0
+    assert metadata["deterministic_benchmark"] is True
+    assert warnings and "Unsupported" in warnings[0]
+
+
+def test_lm_studio_connector_uses_local_openai_endpoint_without_api_key(monkeypatch):
+    observed = {}
+
+    def fake_post_json(url, payload, headers, timeout=30.0):
+        observed["url"] = url
+        observed["payload"] = payload
+        observed["headers"] = headers
+        observed["timeout"] = timeout
+        return {"choices": [{"message": {"content": "local_model.name = gemma-4"}}]}
+
+    monkeypatch.setattr(connectors, "_post_json", fake_post_json)
+    result = connectors.run_inbound_connector(
+        "lm_studio",
+        {
+            "base_url": "http://127.0.0.1:1234/v1",
+            "model": "gemma-4-e4b-uncensored-hauhaucs-aggressive",
+            "prompt": "Return local model fact.",
+            "mock": False,
+            "auto_start": False,
+        },
+    )
+
+    assert observed["url"] == "http://127.0.0.1:1234/v1/chat/completions"
+    assert observed["payload"]["model"] == "gemma-4-e4b-uncensored-hauhaucs-aggressive"
+    assert observed["headers"] == {}
+    assert result.metadata["source_type"] == "lm_studio"
+    assert result.normalized_payload == "local_model.name = gemma-4"
+
+
 def test_connector_run_ingest_preserves_core_lm_boundary(tmp_path):
     app = create_app(tmp_path / "studio.sqlite")
     with TestClient(app) as client:
@@ -114,6 +267,60 @@ def test_connector_run_ingest_preserves_core_lm_boundary(tmp_path):
         assert payload["ingest"]["ledger_entry"]["entry_id"] == "l1"
         assert payload["ingest"]["chat_message"]["origin"] == "core_lm"
         assert client.get("/api/chat").json()[0]["ledger_entry_id"] == "l1"
+
+
+def test_connector_run_ingest_persists_provider_metrics_quality_and_compression(tmp_path, monkeypatch):
+    def fake_ollama_generate(url, payload, timeout, request_start_ns):
+        return (
+            {
+                "model": "llama3.1",
+                "created_at": "2026-05-13T00:00:00Z",
+                "response": "project.name = Core LM Studio",
+                "done_reason": "stop",
+                "total_duration": 1_000_000_000,
+                "load_duration": 10_000_000,
+                "prompt_eval_count": 2,
+                "prompt_eval_duration": 100_000_000,
+                "eval_count": 4,
+                "eval_duration": 200_000_000,
+            },
+            None,
+        )
+
+    monkeypatch.setattr(connectors, "_post_ollama_generate", fake_ollama_generate)
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/connectors/run-ingest",
+            json={
+                "connector_type": "ollama_local_model",
+                "session_id": "default",
+                "branch": "corelm",
+                "config": {"prompt": "Return project fact.", "mock": False, "seed": 1, "auto_start": False},
+                "compression": {"steps": ["clean", "schema_extract", "hash_compress"], "allow_raw_commit": True},
+                "evaluator_config": {"expected_terms": ["Core LM Studio"]},
+            },
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["connector"]["metadata"]["provider_metrics"]["provider_metrics_available"] is True
+        assert payload["ingest"]["metrics"]["provider_total_latency_ms"] == 1000.0
+        assert payload["ingest"]["metrics"]["quality_score"] != 0.5
+        assert payload["ingest"]["quality_eval"]["checks"]["keyword_coverage"]["passed"] is True
+
+        ledger = client.get("/api/ledger/l1").json()
+        assert ledger["metadata"]["provider_metrics"]["derived"]["total_tokens"] == 6
+        assert ledger["metadata"]["quality_eval"]["version"] == "quality_eval.v1"
+        chat = client.get("/api/chat").json()[0]
+        assert chat["metadata"]["provider_metrics"]["derived"]["generation_tokens_per_second"] == 20.0
+        metrics = client.get("/api/metrics").json()[-1]["metric"]
+        assert metrics["provider_metrics_available"] is True
+        assert metrics["total_tokens"] == 6
+        quality = client.get("/api/quality?target_type=ledger_entry&target_id=l1").json()
+        assert quality[-1]["evaluation"]["version"] == "quality_eval.v1"
+
+        compression = client.get("/api/compression?target_type=chat_message&target_id=" + chat["id"]).json()
+        assert compression["packets"][0]["packet"]["canonical_text"].startswith("sha256:")
 
 
 def test_replay_snapshots_workflow_runs_and_settings_are_persisted(tmp_path):
@@ -171,6 +378,169 @@ def test_workflow_uses_connector_normalized_payload_before_core_ingest(tmp_path)
         assert ledger["metadata"]["compression"]["raw_text"] == "[available-before-sanitized-commit]"
         assert "project.name = Core LM Studio" in ledger["metadata"]["compression"]["canonical_text"]
         assert "  project.name" not in ledger["raw_text"]
+
+
+def test_quality_eval_exact_keyword_parse_and_schema_checks():
+    exact = evaluate_quality("Core LM Studio", {"expected_answer": "Core LM Studio", "expected_terms": ["Studio"]})
+    assert exact["checks"]["exact_match"]["passed"] is True
+    assert exact["checks"]["keyword_coverage"]["passed"] is True
+    assert exact["summary_score"] is not None
+
+    structured = evaluate_quality(
+        '{"name":"Core LM Studio","ok":true}',
+        {
+            "format_requirement": "json",
+            "expected_keys": ["name", "ok"],
+            "schema": {"required": ["name"], "properties": {"name": {"type": "string"}, "ok": {"type": "boolean"}}},
+        },
+    )
+    assert structured["checks"]["parse_validity"]["passed"] is True
+    assert structured["checks"]["schema_validity"]["passed"] is True
+    assert structured["checks"]["required_key_coverage"]["value"] == 1.0
+
+
+def test_workflow_preserves_provider_metrics_through_compression_nodes(tmp_path, monkeypatch):
+    def fake_ollama_generate(url, payload, timeout, request_start_ns):
+        return (
+            {
+                "model": "llama3.1",
+                "response": "project.name = Core LM Studio",
+                "done_reason": "stop",
+                "total_duration": 1_000_000_000,
+                "load_duration": 10_000_000,
+                "prompt_eval_count": 2,
+                "prompt_eval_duration": 100_000_000,
+                "eval_count": 4,
+                "eval_duration": 200_000_000,
+            },
+            None,
+        )
+
+    monkeypatch.setattr(connectors, "_post_ollama_generate", fake_ollama_generate)
+    app = create_app(tmp_path / "studio.sqlite")
+    workflow = {
+        "id": "ollama-transform-core",
+        "name": "Ollama Transform Core",
+        "nodes": [
+            {"id": "local", "type": "ollama_local_model", "position": {"x": 0, "y": 0}, "config": {"mock": False, "auto_start": False, "seed": 4}},
+            {"id": "clean", "type": "clean_text", "position": {"x": 200, "y": 0}, "config": {}},
+            {"id": "core", "type": "core_lm", "position": {"x": 400, "y": 0}, "config": {"compression": {"allow_raw_commit": True}}},
+        ],
+        "edges": [
+            {"id": "e1", "source": "local", "target": "clean"},
+            {"id": "e2", "source": "clean", "target": "core"},
+        ],
+    }
+    with TestClient(app) as client:
+        response = client.post("/api/workflows/ollama-transform-core/run", json={"workflow": workflow})
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["trace"][1]["metadata"]["provider_metrics"]["derived"]["total_tokens"] == 6
+        assert payload["trace"][2]["metrics"]["provider_metrics_available"] is True
+        ledger = client.get("/api/ledger/l1").json()
+        assert ledger["metadata"]["provider_metrics"]["derived"]["generation_tokens_per_second"] == 20.0
+
+
+def test_connector_secret_refs_and_error_details_are_redacted(tmp_path, monkeypatch):
+    app = create_app(tmp_path / "studio.sqlite")
+    secret = "sk-SECRETREF1234567890"
+    with TestClient(app) as client:
+        saved = client.post(
+            "/api/connectors",
+            json={
+                "connector": {
+                    "id": "bad-secret-ref",
+                    "name": "Bad Secret Ref",
+                    "direction": "inbound",
+                    "type": "manual_text",
+                    "config": {},
+                    "secret_refs": [secret, "OPENAI_API_KEY"],
+                }
+            },
+        )
+        assert saved.status_code == 200
+        body = client.get("/api/connectors").text
+        assert secret not in body
+        assert "REDACTED_SECRET_REF" in body
+        assert "secret_refs_json" not in body
+
+    import services.core_service.corelm_studio.app as app_module
+
+    def boom(connector_type, config, branch="corelm"):
+        raise ValueError(f"provider failed with {secret}")
+
+    monkeypatch.setattr(app_module, "run_inbound_connector", boom)
+    app = app_module.create_app(tmp_path / "studio-errors.sqlite")
+    with TestClient(app) as client:
+        response = client.post("/api/connectors/run", json={"connector_type": "manual_text", "config": {}})
+        assert response.status_code == 400
+        assert secret not in response.text
+        assert "[REDACTED_SECRET]" in response.text
+
+
+def test_chat_quality_metadata_points_to_chat_quality_row(tmp_path):
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/ingest",
+            json={
+                "text": "project.name = Core LM Studio",
+                "compression": {"allow_raw_commit": True},
+                "evaluator_config": {"expected_terms": ["Core LM Studio"]},
+            },
+        )
+        assert response.status_code == 200
+        chat = response.json()["chat_message"]
+        quality_id = chat["metadata"]["quality_evaluation_id"]
+        quality = client.get(f"/api/quality?target_type=chat_message&target_id={chat['id']}").json()
+        assert quality[-1]["id"] == quality_id
+        assert quality[-1]["target_type"] == "chat_message"
+
+
+def test_string_false_mock_runs_real_ollama_path_without_autostart(monkeypatch):
+    observed = {}
+
+    def fake_ollama_generate(url, payload, timeout, request_start_ns):
+        observed["called"] = True
+        return ({"response": "ok", "eval_count": 1, "eval_duration": 1_000_000}, None)
+
+    monkeypatch.setattr(connectors, "_post_ollama_generate", fake_ollama_generate)
+    result = connectors.run_inbound_connector(
+        "ollama",
+        {"mock": "false", "auto_start": "false", "prompt": "hello"},
+    )
+    assert observed["called"] is True
+    assert result.raw_payload == "ok"
+
+
+def test_runtime_status_and_ensure_api_are_sanitized(tmp_path, monkeypatch):
+    import services.core_service.corelm_studio.app as app_module
+
+    def fake_runtime_status(provider="ollama", base_url=None, config=None):
+        return {"provider": provider, "base_url": base_url or "http://127.0.0.1:11434", "healthy": False, "last_error": None}
+
+    def fake_ensure(provider, base_url, config=None):
+        return {"provider": provider, "base_url": base_url, "healthy": True, "managed": True}
+
+    monkeypatch.setattr(app_module, "runtime_status", fake_runtime_status)
+    monkeypatch.setattr(app_module, "ensure_runtime", fake_ensure)
+    app = app_module.create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        status = client.get("/api/local-runtimes").json()
+        assert status["provider"] == "ollama"
+        ensured = client.post("/api/local-runtimes/ollama/ensure", json={"config": {"base_url": "http://127.0.0.1:11434"}}).json()
+        assert ensured["healthy"] is True
+        lm_studio = client.post("/api/local-runtimes/lm_studio/ensure", json={"config": {"base_url": "http://127.0.0.1:1234/v1"}}).json()
+        assert lm_studio["provider"] == "lm_studio"
+
+
+def test_runtime_autostart_zero_string_is_disabled(monkeypatch):
+    from services.core_service.corelm_studio import local_runtime
+
+    monkeypatch.setattr(local_runtime, "probe_runtime", lambda provider, base_url: False)
+    status = local_runtime.ensure_runtime("ollama", "http://127.0.0.1:11434", {"auto_start": "0"})
+    assert status["healthy"] is False
+    assert status["last_error"] == "runtime auto-start disabled"
 
 
 def test_workflow_without_core_node_creates_session_before_run_persistence(tmp_path):

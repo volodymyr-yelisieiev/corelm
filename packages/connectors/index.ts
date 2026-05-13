@@ -2,6 +2,7 @@ import type { ConnectorMetadata } from "../shared";
 
 export type InboundConnectorResult = {
   raw_payload: string;
+  normalized_payload?: string;
   metadata: ConnectorMetadata;
 };
 

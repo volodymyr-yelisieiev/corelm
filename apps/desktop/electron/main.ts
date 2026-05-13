@@ -86,7 +86,8 @@ async function startService(): Promise<void> {
     ...process.env,
     PYTHONPATH: repoRoot(),
     CORELM_STUDIO_HOST: "127.0.0.1",
-    CORELM_STUDIO_PORT: "8765"
+    CORELM_STUDIO_PORT: "8765",
+    CORELM_STUDIO_DATA_DIR: path.join(app.getPath("userData"), "corelm_service")
   };
   const override = process.env.CORELM_STUDIO_SERVICE_CMD;
   if (override) {

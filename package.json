@@ -20,12 +20,9 @@
     "studio:smoke": "node scripts/run_python.mjs -m pytest -q tests/core_service"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.1.1",
-    "electron-is-dev": "^3.0.1",
     "lucide-react": "^0.468.0",
     "react": "^19.2.1",
-    "react-dom": "^19.2.1",
-    "vite": "^7.2.7"
+    "react-dom": "^19.2.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -33,11 +30,13 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
     "concurrently": "^9.2.1",
     "electron": "^39.2.7",
     "electron-builder": "^26.0.12",
     "jsdom": "^27.3.0",
     "typescript": "^5.9.3",
+    "vite": "^7.2.7",
     "vitest": "^4.0.15",
     "wait-on": "^9.0.3"
   },

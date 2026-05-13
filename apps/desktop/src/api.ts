@@ -1,10 +1,14 @@
 import type {
   ChatMessage,
+  CompressionLookup,
+  CompressionPreview,
   ConnectorRecord,
   ConnectorRunResult,
   HealthState,
   LedgerMirror,
+  LocalRuntimeStatus,
   MetricRecord,
+  QualityEvaluation,
   ReplaySnapshot,
   SessionRecord,
   StudioState,
@@ -53,6 +57,28 @@ export const api = {
   ledgerEntry: (entryId: string, sessionId = "default") =>
     request<LedgerMirror>(`/api/ledger/${encodeURIComponent(entryId)}?session_id=${encodeURIComponent(sessionId)}`),
   metrics: (sessionId = "default") => request<MetricRecord[]>(`/api/metrics?session_id=${encodeURIComponent(sessionId)}&limit=200`),
+  localRuntime: (provider = "ollama", baseUrl?: string) => {
+    const params = new URLSearchParams({ provider });
+    if (baseUrl) {
+      params.set("base_url", baseUrl);
+    }
+    return request<LocalRuntimeStatus>(`/api/local-runtimes?${params.toString()}`);
+  },
+  ensureLocalRuntime: (provider: string, config: Record<string, unknown>) =>
+    request<LocalRuntimeStatus>(`/api/local-runtimes/${encodeURIComponent(provider)}/ensure`, {
+      method: "POST",
+      body: JSON.stringify({ provider, base_url: String(config.base_url ?? ""), config })
+    }),
+  quality: (sessionId = "default", targetType?: string, targetId?: string) => {
+    const params = new URLSearchParams({ session_id: sessionId, limit: "200" });
+    if (targetType) {
+      params.set("target_type", targetType);
+    }
+    if (targetId) {
+      params.set("target_id", targetId);
+    }
+    return request<Array<{ id: string; target_type: string; target_id: string; evaluation: QualityEvaluation }>>(`/api/quality?${params.toString()}`);
+  },
   connectors: () => request<ConnectorRecord[]>("/api/connectors"),
   connectorCatalog: () => request<Record<string, Array<Record<string, unknown>>>>("/api/connectors/catalog"),
   saveConnector: (connector: ConnectorRecord) =>
@@ -71,6 +97,7 @@ export const api = {
     config: Record<string, unknown>;
     format?: string;
     compression?: Record<string, unknown>;
+    evaluator_config?: Record<string, unknown>;
   }) =>
     request<{ connector: ConnectorRunResult; ingest: Record<string, unknown> }>("/api/connectors/run-ingest", {
       method: "POST",
@@ -106,6 +133,20 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload)
     }),
+  compressionPreview: (payload: {
+    text: string;
+    branch: string;
+    compression?: Record<string, unknown>;
+    annotations?: Array<Record<string, unknown>>;
+  }) =>
+    request<CompressionPreview>("/api/compression/preview", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  compressionLookup: (sessionId: string, targetType: string, targetId: string) =>
+    request<CompressionLookup>(
+      `/api/compression?session_id=${encodeURIComponent(sessionId)}&target_type=${encodeURIComponent(targetType)}&target_id=${encodeURIComponent(targetId)}`
+    ),
   routeChat: (messageId: string, sessionId: string, packetType = "engineering_task_packet") =>
     request<Record<string, unknown>>(`/api/chat/${encodeURIComponent(messageId)}/route?session_id=${encodeURIComponent(sessionId)}`, {
       method: "POST",

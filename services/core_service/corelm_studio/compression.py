@@ -21,15 +21,33 @@ class CompressionResult:
     digest: str = ""
     compression_ratio: float = 1.0
     contradiction_candidates: list[str] = field(default_factory=list)
+    sanitized_text: str | None = None
+    cleaned_text: str | None = None
+    deduped_text: str | None = None
+    canonicalized_text: str | None = None
+    structured_extraction: list[dict[str, Any]] = field(default_factory=list)
+    raw_length: int = 0
+    canonical_length: int = 0
+    token_proxy_before: int = 0
+    token_proxy_after: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "raw_text": self.raw_text,
+            "sanitized_text": self.sanitized_text,
+            "cleaned_text": self.cleaned_text,
+            "deduped_text": self.deduped_text,
+            "canonicalized_text": self.canonicalized_text,
             "canonical_text": self.canonical_text,
             "steps": list(self.steps),
             "annotations": list(self.annotations),
+            "structured_extraction": list(self.structured_extraction),
             "digest": self.digest,
             "compression_ratio": self.compression_ratio,
+            "raw_length": self.raw_length,
+            "canonical_length": self.canonical_length,
+            "token_proxy_before": self.token_proxy_before,
+            "token_proxy_after": self.token_proxy_after,
             "contradiction_candidates": list(self.contradiction_candidates),
         }
 
@@ -155,18 +173,25 @@ def preprocess_payload(
     )
     raw = sanitize_text(str(raw_text))
     text = raw
+    sanitized = text
+    cleaned: str | None = None
+    deduped: str | None = None
+    canonicalized: str | None = None
     applied: list[str] = ["sanitize"]
     if "clean" in steps or "text_cleaning" in steps:
         text = clean_text(text)
+        cleaned = text
         applied.append("clean")
     if "dedupe" in steps or "deduplication" in steps:
         text = dedupe_lines(text)
+        deduped = text
         applied.append("dedupe")
     if "summarize" in steps or "summarization" in steps:
         text = summarize_text(text, int(options.get("summary_words", 80)))
         applied.append("summarize")
     if "canonicalize" in steps or "canonicalization" in steps:
         text = canonicalize(text)
+        canonicalized = text
         applied.append("canonicalize")
     extracted: list[dict[str, Any]] = []
     if "schema_extract" in steps or "key_value_extract" in steps or "schema extraction" in steps:
@@ -207,4 +232,13 @@ def preprocess_payload(
         digest=digest,
         compression_ratio=ratio,
         contradiction_candidates=candidates,
+        sanitized_text=sanitized,
+        cleaned_text=cleaned,
+        deduped_text=deduped,
+        canonicalized_text=canonicalized or text,
+        structured_extraction=extracted,
+        raw_length=len(raw),
+        canonical_length=len(compressed),
+        token_proxy_before=len(raw.split()),
+        token_proxy_after=len(compressed.split()),
     )
