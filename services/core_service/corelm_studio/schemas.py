@@ -106,6 +106,23 @@ class LocalRuntimeEnsureRequest(BaseModel):
     config: dict[str, Any] = Field(default_factory=dict)
 
 
+class DirectRuntimeLoadRequest(BaseModel):
+    adapter_id: str
+    model_ref: str
+    config: dict[str, Any] = Field(default_factory=dict)
+
+
+class BenchmarkProfileSaveRequest(BaseModel):
+    profile: dict[str, Any]
+
+
+class BenchmarkRunRequest(BaseModel):
+    profile_id: str | None = None
+    profile: dict[str, Any] | None = None
+    session_id: str = "default"
+    branch: str = "corelm"
+
+
 FormatName = Literal[
     "markdown",
     "plain_text",

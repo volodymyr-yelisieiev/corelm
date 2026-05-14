@@ -193,6 +193,57 @@ class StudioDB:
                     updated_at TEXT NOT NULL,
                     FOREIGN KEY (connector_id) REFERENCES connectors(id) ON DELETE CASCADE
                 );
+
+                CREATE TABLE IF NOT EXISTS benchmark_profiles (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    description TEXT NOT NULL DEFAULT '',
+                    profile_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS benchmark_runs (
+                    id TEXT PRIMARY KEY,
+                    profile_id TEXT NOT NULL,
+                    session_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    mode TEXT NOT NULL,
+                    strict INTEGER NOT NULL DEFAULT 0,
+                    adapter_id TEXT NOT NULL,
+                    manifest_json TEXT NOT NULL,
+                    summary_json TEXT NOT NULL,
+                    report_json TEXT NOT NULL,
+                    report_paths_json TEXT NOT NULL,
+                    started_at TEXT NOT NULL,
+                    completed_at TEXT,
+                    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS benchmark_trials (
+                    id TEXT PRIMARY KEY,
+                    run_id TEXT NOT NULL,
+                    case_id TEXT NOT NULL,
+                    repetition_index INTEGER NOT NULL,
+                    status TEXT NOT NULL,
+                    input_json TEXT NOT NULL,
+                    adapter_result_json TEXT NOT NULL,
+                    ingest_json TEXT NOT NULL,
+                    metrics_json TEXT NOT NULL,
+                    warnings_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    FOREIGN KEY (run_id) REFERENCES benchmark_runs(id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS benchmark_artifacts (
+                    id TEXT PRIMARY KEY,
+                    run_id TEXT NOT NULL,
+                    artifact_type TEXT NOT NULL,
+                    path TEXT,
+                    content_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    FOREIGN KEY (run_id) REFERENCES benchmark_runs(id) ON DELETE CASCADE
+                );
                 """
             )
             self._conn.commit()
@@ -539,3 +590,186 @@ class StudioDB:
                 (str(key), dumps_json(value), now),
             )
         return self.get_settings()
+
+    def upsert_benchmark_profile(self, profile: dict[str, Any]) -> dict[str, Any]:
+        profile = sanitize_obj(profile)
+        now = utc_now()
+        profile_id = str(profile["id"])
+        existing = self.query_one("SELECT id FROM benchmark_profiles WHERE id = ?", (profile_id,))
+        params = (
+            profile_id,
+            str(profile.get("name") or profile_id),
+            str(profile.get("description") or ""),
+            dumps_json(profile),
+        )
+        if existing:
+            self.execute(
+                """
+                UPDATE benchmark_profiles
+                SET name = ?, description = ?, profile_json = ?, updated_at = ?
+                WHERE id = ?
+                """,
+                (params[1], params[2], params[3], now, profile_id),
+            )
+        else:
+            self.execute(
+                """
+                INSERT INTO benchmark_profiles
+                (id, name, description, profile_json, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (*params, now, now),
+            )
+        return self.get_benchmark_profile(profile_id) or {}
+
+    def get_benchmark_profile(self, profile_id: str) -> dict[str, Any] | None:
+        row = self.query_one("SELECT profile_json FROM benchmark_profiles WHERE id = ?", (profile_id,))
+        return loads_json(row["profile_json"], None) if row else None
+
+    def list_benchmark_profiles(self) -> list[dict[str, Any]]:
+        rows = self.query_all("SELECT profile_json FROM benchmark_profiles ORDER BY updated_at DESC")
+        return [loads_json(row["profile_json"], {}) for row in rows]
+
+    def start_benchmark_run(
+        self,
+        run_id: str,
+        profile_id: str,
+        session_id: str,
+        mode: str,
+        strict: bool,
+        adapter_id: str,
+        manifest: dict[str, Any],
+    ) -> dict[str, Any]:
+        now = utc_now()
+        self.execute(
+            """
+            INSERT INTO benchmark_runs
+            (id, profile_id, session_id, status, mode, strict, adapter_id, manifest_json,
+             summary_json, report_json, report_paths_json, started_at, completed_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                run_id,
+                profile_id,
+                session_id,
+                "running",
+                mode,
+                1 if strict else 0,
+                adapter_id,
+                dumps_json(sanitize_obj(manifest)),
+                dumps_json({}),
+                dumps_json({}),
+                dumps_json({}),
+                now,
+                None,
+            ),
+        )
+        return self.get_benchmark_run(run_id) or {}
+
+    def finish_benchmark_run(
+        self,
+        run_id: str,
+        status: str,
+        manifest: dict[str, Any],
+        summary: dict[str, Any],
+        report: dict[str, Any],
+        report_paths: dict[str, str],
+    ) -> dict[str, Any]:
+        self.execute(
+            """
+            UPDATE benchmark_runs
+            SET status = ?, manifest_json = ?, summary_json = ?, report_json = ?,
+                report_paths_json = ?, completed_at = ?
+            WHERE id = ?
+            """,
+            (
+                status,
+                dumps_json(sanitize_obj(manifest)),
+                dumps_json(sanitize_obj(summary)),
+                dumps_json(sanitize_obj(report)),
+                dumps_json(sanitize_obj(report_paths)),
+                utc_now(),
+                run_id,
+            ),
+        )
+        for artifact_type, path in report_paths.items():
+            artifact_id = f"artifact-{run_id}-{artifact_type}"
+            self.execute(
+                """
+                INSERT OR REPLACE INTO benchmark_artifacts
+                (id, run_id, artifact_type, path, content_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (artifact_id, run_id, artifact_type, path, dumps_json({"path": path}), utc_now()),
+            )
+        return self.get_benchmark_run(run_id) or {}
+
+    def record_benchmark_trial(self, run_id: str, trial: dict[str, Any]) -> dict[str, Any]:
+        trial = sanitize_obj(trial)
+        trial_id = str(trial.get("id") or f"trial-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}")
+        self.execute(
+            """
+            INSERT OR REPLACE INTO benchmark_trials
+            (id, run_id, case_id, repetition_index, status, input_json, adapter_result_json,
+             ingest_json, metrics_json, warnings_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                trial_id,
+                run_id,
+                str(trial.get("case_id") or "case"),
+                int(trial.get("repetition_index") or 0),
+                str(trial.get("status") or "unknown"),
+                dumps_json(trial.get("input") or {}),
+                dumps_json(trial.get("adapter_result") or {}),
+                dumps_json(trial.get("ingest") or {}),
+                dumps_json(trial.get("metrics") or {}),
+                dumps_json(trial.get("warnings") or []),
+                utc_now(),
+            ),
+        )
+        return self.get_benchmark_trial(trial_id) or {}
+
+    def get_benchmark_trial(self, trial_id: str) -> dict[str, Any] | None:
+        row = self.query_one("SELECT * FROM benchmark_trials WHERE id = ?", (trial_id,))
+        if not row:
+            return None
+        payload = dict(row)
+        payload["input"] = loads_json(row["input_json"], {})
+        payload["adapter_result"] = loads_json(row["adapter_result_json"], {})
+        payload["ingest"] = loads_json(row["ingest_json"], {})
+        payload["metrics"] = loads_json(row["metrics_json"], {})
+        payload["warnings"] = loads_json(row["warnings_json"], [])
+        for key in ("input_json", "adapter_result_json", "ingest_json", "metrics_json", "warnings_json"):
+            payload.pop(key, None)
+        return payload
+
+    def list_benchmark_trials(self, run_id: str) -> list[dict[str, Any]]:
+        rows = self.query_all(
+            "SELECT id FROM benchmark_trials WHERE run_id = ? ORDER BY created_at ASC",
+            (run_id,),
+        )
+        return [trial for row in rows if (trial := self.get_benchmark_trial(row["id"]))]
+
+    def get_benchmark_run(self, run_id: str) -> dict[str, Any] | None:
+        row = self.query_one("SELECT * FROM benchmark_runs WHERE id = ?", (run_id,))
+        if not row:
+            return None
+        payload = dict(row)
+        payload["strict"] = bool(row["strict"])
+        payload["manifest"] = loads_json(row["manifest_json"], {})
+        payload["summary"] = loads_json(row["summary_json"], {})
+        payload["report"] = loads_json(row["report_json"], {})
+        payload["report_paths"] = loads_json(row["report_paths_json"], {})
+        payload["trials"] = self.list_benchmark_trials(run_id)
+        for key in ("manifest_json", "summary_json", "report_json", "report_paths_json"):
+            payload.pop(key, None)
+        return payload
+
+    def list_benchmark_runs(self, session_id: str = "default", limit: int = 100) -> list[dict[str, Any]]:
+        rows = self.query_all(
+            "SELECT id FROM benchmark_runs WHERE session_id = ? ORDER BY started_at DESC LIMIT ?",
+            (session_id, limit),
+        )
+        runs = [run for row in rows if (run := self.get_benchmark_run(row["id"]))]
+        return list(reversed(runs))

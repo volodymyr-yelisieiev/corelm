@@ -1,9 +1,12 @@
 import type {
+  BenchmarkProfile,
+  BenchmarkRun,
   ChatMessage,
   CompressionLookup,
   CompressionPreview,
   ConnectorRecord,
   ConnectorRunResult,
+  DirectRuntimeAdapterInfo,
   HealthState,
   LedgerMirror,
   LocalRuntimeStatus,
@@ -40,6 +43,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(text || response.statusText);
   }
   return response.json() as Promise<T>;
+}
+
+async function requestText(path: string): Promise<string> {
+  const response = await fetch(`${SERVICE_URL}${path}`);
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || response.statusText);
+  }
+  return response.text();
 }
 
 export const api = {
@@ -173,5 +185,27 @@ export const api = {
     request<Record<string, unknown>>("/api/settings", {
       method: "POST",
       body: JSON.stringify({ settings })
-    })
+    }),
+  directRuntimeAdapters: () => request<DirectRuntimeAdapterInfo[]>("/api/direct-runtimes/adapters"),
+  directRuntimeModels: (adapterId?: string) => {
+    const params = new URLSearchParams();
+    if (adapterId) {
+      params.set("adapter_id", adapterId);
+    }
+    return request<Array<Record<string, unknown>>>(`/api/direct-runtimes/models${params.toString() ? `?${params.toString()}` : ""}`);
+  },
+  benchmarkProfiles: () => request<BenchmarkProfile[]>("/api/benchmarks/profiles"),
+  saveBenchmarkProfile: (profile: BenchmarkProfile) =>
+    request<BenchmarkProfile>("/api/benchmarks/profiles", {
+      method: "POST",
+      body: JSON.stringify({ profile })
+    }),
+  runBenchmark: (payload: { profile_id?: string; profile?: BenchmarkProfile; session_id: string; branch: string }) =>
+    request<BenchmarkRun>("/api/benchmarks/run", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  benchmarkRuns: (sessionId = "default") => request<BenchmarkRun[]>(`/api/benchmarks/runs?session_id=${encodeURIComponent(sessionId)}&limit=100`),
+  benchmarkReport: (runId: string, format = "markdown") =>
+    requestText(`/api/benchmarks/runs/${encodeURIComponent(runId)}/report?format=${encodeURIComponent(format)}`)
 };

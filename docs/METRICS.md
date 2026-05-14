@@ -33,3 +33,14 @@ sets `provider_metrics_available=false`.
 
 Deterministic benchmark mode for Ollama requires `seed`, forces `stream=false`,
 and sends explicit `temperature`, `top_p`, `top_k`, and `num_predict` values.
+
+## Direct Runtime Benchmark Metrics
+
+Direct benchmark runs add adapter/runtime/model metadata, token traces,
+sampler config, determinism scores, real compression metrics, Core LM state
+metrics, profile verdicts, and report export status. The full catalog is in
+`docs/METRIC_CATALOG.md`.
+
+Strict direct results only come from direct adapters that pass
+`docs/STRICT_BENCHMARK_POLICY.md`. Ollama, LM Studio, and other provider-style
+HTTP connectors remain bridge mode and are labeled non-strict.

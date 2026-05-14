@@ -212,3 +212,70 @@ export type ReplaySnapshot = {
   snapshot: Record<string, unknown>;
   created_at: string;
 };
+
+export type DirectRuntimeAdapterInfo = {
+  adapter_id: string;
+  runtime_family: string;
+  strict_eligible: boolean;
+  direct_execution: boolean;
+  supports_token_ids: boolean;
+  supports_token_text: boolean;
+  supports_per_token_timestamps: boolean;
+  supports_logits: boolean;
+  supports_top_k: boolean;
+  supports_seed: boolean;
+  availability: string;
+  support_classification?: string;
+  last_error?: string | null;
+  warnings?: string[];
+  metric_support?: Record<string, unknown>;
+};
+
+export type BenchmarkProfile = {
+  id: string;
+  name: string;
+  description?: string;
+  benchmark_version?: string;
+  mode: string;
+  strict: boolean;
+  adapter_id: string;
+  model_ref: string;
+  repetitions: number;
+  cases: Array<Record<string, unknown>>;
+  generation_config: Record<string, unknown>;
+  trace_config?: Record<string, unknown>;
+  compression?: Record<string, unknown>;
+  thresholds?: Record<string, unknown>;
+  notes?: string;
+};
+
+export type BenchmarkTrial = {
+  id: string;
+  run_id: string;
+  case_id: string;
+  repetition_index: number;
+  status: string;
+  input: Record<string, unknown>;
+  adapter_result: Record<string, unknown>;
+  ingest: Record<string, unknown>;
+  metrics: Record<string, unknown>;
+  warnings: string[];
+};
+
+export type BenchmarkRun = {
+  id?: string;
+  run_id?: string;
+  profile_id?: string;
+  session_id?: string;
+  status?: string;
+  mode?: string;
+  strict?: boolean;
+  adapter_id?: string;
+  manifest?: Record<string, unknown>;
+  summary: Record<string, unknown>;
+  profile?: BenchmarkProfile;
+  trials: BenchmarkTrial[];
+  report_paths?: Record<string, string>;
+  started_at?: string;
+  completed_at?: string | null;
+};

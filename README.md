@@ -17,6 +17,9 @@ Core LM full-spectrum research kit. It combines:
   structural quality evaluation, and a Compression Inspector for run metadata.
 - sidecar-managed Ollama startup for real local model runs when the `ollama`
   binary is installed.
+- a direct-runtime benchmark layer with strict-vs-bridge policy, direct adapter
+  discovery, persisted benchmark profiles/runs/trials, and JSON/Markdown/CSV
+  reports.
 
 Core LM remains the canonical state authority. External systems are perturbation
 sources or outbound targets, and the global chat is an interaction bus rather
@@ -42,6 +45,8 @@ Useful development commands:
 
 ```bash
 PYTHONPATH=. python -m services.core_service.corelm_studio
+PYTHONPATH=. python -m services.core_service.corelm_studio.benchmark_cli profiles
+PYTHONPATH=. python -m services.core_service.corelm_studio.benchmark_cli run --profile-id builtin-runtime-conformance
 npm run desktop:test
 npm run desktop:build
 npm run desktop:package:win
@@ -60,8 +65,16 @@ Primary Studio docs:
 - `docs/corelm_studio/connectors.md`
 - `docs/corelm_studio/workflows.md`
 - `docs/METRICS.md`
+- `docs/DIRECT_RUNTIME_BENCHMARK_PLAN.md`
+- `docs/METRIC_CATALOG.md`
+- `docs/ADAPTER_SUPPORT_MATRIX.md`
+- `docs/STRICT_BENCHMARK_POLICY.md`
+- `docs/BENCHMARK_PROFILES.md`
+- `docs/DETERMINISM_INSPECTOR.md`
+- `docs/RUNTIME_TELEMETRY.md`
 - `docs/QUALITY_EVAL.md`
 - `docs/COMPRESSION_INSPECTOR.md`
+- `docs/WINDOWS_BUILD_DIRECT.md`
 - `docs/corelm_studio/security_notes.md`
 - `docs/corelm_studio/replay_and_ledger.md`
 - `docs/corelm_studio/windows_build.md`

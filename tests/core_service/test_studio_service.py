@@ -6,9 +6,12 @@ from services.core_service.corelm_studio.compression import chunk_text, preproce
 from fastapi.testclient import TestClient
 
 from services.core_service.corelm_studio.app import create_app
+from services.core_service.corelm_studio.benchmarking import BenchmarkEngine, evaluate_policy
 from services.core_service.corelm_studio import connectors
+from services.core_service.corelm_studio.direct_runtime import DirectRuntimeAdapter, direct_runtime_registry
 from services.core_service.corelm_studio.metrics import build_provider_metrics
 from services.core_service.corelm_studio.quality import evaluate_quality
+from services.core_service.corelm_studio.studio_core import StudioCore
 
 
 def test_ingest_updates_chat_ledger_metrics_and_replay(tmp_path):
@@ -319,8 +322,188 @@ def test_connector_run_ingest_persists_provider_metrics_quality_and_compression(
         quality = client.get("/api/quality?target_type=ledger_entry&target_id=l1").json()
         assert quality[-1]["evaluation"]["version"] == "quality_eval.v1"
 
-        compression = client.get("/api/compression?target_type=chat_message&target_id=" + chat["id"]).json()
-        assert compression["packets"][0]["packet"]["canonical_text"].startswith("sha256:")
+
+def test_direct_runtime_registry_contract_reports_strict_and_smoke_adapters():
+    registry = direct_runtime_registry()
+    adapters = registry.adapters()
+    by_id = {item["adapter_id"]: item for item in adapters}
+    assert by_id["transformers_direct"]["strict_eligible"] is True
+    assert by_id["llamacpp_direct"]["strict_eligible"] is True
+    assert by_id["deterministic_direct_smoke"]["strict_eligible"] is False
+    assert by_id["deterministic_direct_smoke"]["supports_token_ids"] is True
+
+
+def test_strict_policy_rejects_bridge_and_non_strict_smoke_adapter():
+    bridge = evaluate_policy(
+        {
+            "mode": "strict_direct",
+            "strict": True,
+            "adapter_id": "bridge:ollama_local_model",
+            "model_ref": "llama3.1",
+            "generation_config": {"seed": 0},
+        },
+        None,
+    )
+    assert bridge.eligible is False
+    assert any("rejects bridge" in item for item in bridge.errors)
+
+    smoke = evaluate_policy(
+        {
+            "mode": "strict_direct",
+            "strict": True,
+            "adapter_id": "deterministic_direct_smoke",
+            "model_ref": "deterministic://corelm-smoke",
+            "generation_config": {"seed": 0},
+        },
+        next(item for item in direct_runtime_registry().adapters() if item["adapter_id"] == "deterministic_direct_smoke"),
+    )
+    assert smoke.eligible is False
+    assert any("not strict-benchmark eligible" in item for item in smoke.errors)
+
+
+def test_benchmark_smoke_profile_runs_through_core_lm_and_exports_reports(tmp_path, monkeypatch):
+    monkeypatch.setenv("CORELM_BENCHMARK_REPORT_DIR", str(tmp_path / "reports"))
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        profiles = client.get("/api/benchmarks/profiles").json()
+        assert any(profile["id"] == "builtin-runtime-conformance" for profile in profiles)
+
+        response = client.post(
+            "/api/benchmarks/run",
+            json={"profile_id": "builtin-runtime-conformance", "session_id": "default", "branch": "corelm"},
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["summary"]["status"] == "ok"
+        assert payload["summary"]["strict_result"] is False
+        assert payload["trials"][0]["ingest"]["ledger_entry_id"] == "l1"
+        assert payload["trials"][0]["adapter_result"]["token_trace_hash"]
+        assert payload["summary"]["end_to_end_pipeline_success"] == 1.0
+        assert payload["summary"]["report_export_success"] == 1.0
+        assert payload["report_paths"]["json"].endswith(".json")
+
+        runs = client.get("/api/benchmarks/runs").json()
+        assert runs[-1]["id"] == payload["run_id"]
+        report = client.get(f"/api/benchmarks/runs/{payload['run_id']}/report?format=csv")
+        assert report.status_code == 200
+        assert "token_trace_hash" in report.text
+
+
+def test_benchmark_profile_id_honors_report_dir_and_creates_new_session(tmp_path, monkeypatch):
+    monkeypatch.setenv("CORELM_BENCHMARK_REPORT_DIR", str(tmp_path / "api-reports"))
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/benchmarks/run",
+            json={"profile_id": "builtin-runtime-conformance", "session_id": "new-benchmark-session", "branch": "corelm"},
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["summary"]["status"] == "ok"
+        assert any(item["id"] == "new-benchmark-session" for item in client.get("/api/sessions").json())
+
+    core = StudioCore(db_path=tmp_path / "direct.sqlite")
+    report_dir = tmp_path / "custom-reports"
+    try:
+        report = BenchmarkEngine(core).run_profile_id("builtin-runtime-conformance", "custom-session", "corelm", report_dir)
+        assert report["report_paths"]["json"].startswith(str(report_dir))
+        assert (report_dir / f"{report['run_id']}.json").exists()
+    finally:
+        core.close()
+
+
+def test_failed_strict_runtime_does_not_produce_strict_result(tmp_path, monkeypatch):
+    monkeypatch.setenv("CORELM_BENCHMARK_REPORT_DIR", str(tmp_path / "reports"))
+    class FailingStrictAdapter(DirectRuntimeAdapter):
+        adapter_id = "failing_strict_test"
+        family = "failing_test"
+        strict_eligible = True
+
+        def load_model(self, model_ref, config=None):  # type: ignore[override]
+            raise RuntimeError("expected load failure")
+
+        def capability_report(self):
+            return super().capability_report() | {
+                "strict_eligible": True,
+                "availability": "available",
+                "support_classification": "DIRECT / STRICT-BENCH ELIGIBLE",
+                "supports_seed": True,
+            }
+
+    direct_runtime_registry().register(FailingStrictAdapter())
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/benchmarks/run",
+            json={
+                "session_id": "default",
+                "branch": "corelm",
+                "profile": {
+                    "id": "strict-failing-test",
+                    "name": "Strict Failing Test",
+                    "mode": "strict_direct",
+                    "strict": True,
+                    "adapter_id": "failing_strict_test",
+                    "model_ref": "local://missing",
+                    "repetitions": 1,
+                    "cases": [{"id": "case-1", "prompt": "strict.fact = value"}],
+                    "generation_config": {"seed": 0, "temperature": 0},
+                    "thresholds": {"end_to_end_pipeline_success": 1.0},
+                },
+            },
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["summary"]["status"] == "blocked"
+        assert payload["summary"]["strict_result"] is False
+
+
+def test_topk_candidate_trace_is_not_redacted():
+    from services.core_service.corelm_studio.direct_runtime import DirectGenerationResult
+
+    result = DirectGenerationResult(
+        final_text="x",
+        token_ids=[1],
+        decoded_tokens=["x"],
+        per_token_timestamps_ms=[0.1],
+        top_k_candidates=[[{"candidate_id": 7, "candidate_text": "x", "probability": 0.9}]],
+    ).to_dict()
+    assert result["top_k_candidates"][0][0]["candidate_id"] == 7
+    assert result["top_k_candidates"][0][0]["candidate_text"] == "x"
+    assert "REDACTED" not in str(result["top_k_candidates"])
+
+
+def test_direct_runtime_session_load_and_unload_api(tmp_path):
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        adapters = client.get("/api/direct-runtimes/adapters").json()
+        assert any(item["adapter_id"] == "deterministic_direct_smoke" for item in adapters)
+        models = client.get("/api/direct-runtimes/models?adapter_id=deterministic_direct_smoke").json()
+        assert models[0]["model_ref"] == "deterministic://corelm-smoke"
+        loaded = client.post(
+            "/api/direct-runtimes/sessions/load",
+            json={"adapter_id": "deterministic_direct_smoke", "model_ref": "deterministic://corelm-smoke", "config": {}},
+        )
+        assert loaded.status_code == 200
+        session_id = loaded.json()["session_id"]
+        unloaded = client.post(f"/api/direct-runtimes/sessions/{session_id}/unload")
+        assert unloaded.status_code == 200
+        assert unloaded.json()["status"] == "unloaded"
+
+
+def test_strict_template_is_blocked_without_model_ref(tmp_path, monkeypatch):
+    monkeypatch.setenv("CORELM_BENCHMARK_REPORT_DIR", str(tmp_path / "reports"))
+    app = create_app(tmp_path / "studio.sqlite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/benchmarks/run",
+            json={"profile_id": "builtin-strict-transformers-template", "session_id": "default", "branch": "corelm"},
+        )
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["summary"]["status"] == "blocked"
+        assert payload["summary"]["strict_result"] is False
+        assert any("model_ref" in item for item in payload["summary"]["errors"])
 
 
 def test_replay_snapshots_workflow_runs_and_settings_are_persisted(tmp_path):

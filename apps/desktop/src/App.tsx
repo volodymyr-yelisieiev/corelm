@@ -34,9 +34,12 @@ import { api } from "./api";
 import { CompressionPanel } from "./CompressionPanel";
 import { defaultOllamaConfig, defaultWorkflow } from "./defaults";
 import type {
+  BenchmarkProfile,
+  BenchmarkRun,
   ChatMessage,
   CompressionPreview,
   ConnectorRecord,
+  DirectRuntimeAdapterInfo,
   LedgerMirror,
   LocalRuntimeStatus,
   MetricRecord,
@@ -53,6 +56,7 @@ import type {
 import {
   collectCompressionPackets,
   compactDigest,
+  formatMetric,
   maybeCompression,
   metricText,
   onEnterOrSpace,
@@ -83,6 +87,10 @@ export default function App() {
   const [settings, setSettings] = useState<Record<string, unknown>>({});
   const [replaySnapshots, setReplaySnapshots] = useState<ReplaySnapshot[]>([]);
   const [workflowRuns, setWorkflowRuns] = useState<WorkflowRunRecord[]>([]);
+  const [benchmarkProfiles, setBenchmarkProfiles] = useState<BenchmarkProfile[]>([]);
+  const [benchmarkRuns, setBenchmarkRuns] = useState<BenchmarkRun[]>([]);
+  const [directAdapters, setDirectAdapters] = useState<DirectRuntimeAdapterInfo[]>([]);
+  const [benchmarkResult, setBenchmarkResult] = useState<BenchmarkRun | null>(null);
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [workflow, setWorkflow] = useState<Workflow>(defaultWorkflow);
   const [runResult, setRunResult] = useState<WorkflowRunResult | null>(null);
@@ -115,6 +123,9 @@ export default function App() {
         nextSettings,
         nextReplaySnapshots,
         nextWorkflowRuns,
+        nextBenchmarkProfiles,
+        nextBenchmarkRuns,
+        nextDirectAdapters,
         nextState,
         nextSessions
       ] = await Promise.all([
@@ -128,6 +139,9 @@ export default function App() {
         api.settings(),
         api.replaySnapshots(sessionId),
         api.workflowRuns(sessionId),
+        api.benchmarkProfiles(),
+        api.benchmarkRuns(sessionId),
+        api.directRuntimeAdapters(),
         api.state(sessionId),
         api.sessions()
       ].map((request) => request.then((value) => ({ status: "fulfilled" as const, value })).catch(() => ({ status: "rejected" as const }))));
@@ -155,6 +169,9 @@ export default function App() {
       apply(nextSettings as { status: "fulfilled"; value: Record<string, unknown> } | { status: "rejected" }, setSettings);
       apply(nextReplaySnapshots as { status: "fulfilled"; value: ReplaySnapshot[] } | { status: "rejected" }, setReplaySnapshots);
       apply(nextWorkflowRuns as { status: "fulfilled"; value: WorkflowRunRecord[] } | { status: "rejected" }, setWorkflowRuns);
+      apply(nextBenchmarkProfiles as { status: "fulfilled"; value: BenchmarkProfile[] } | { status: "rejected" }, setBenchmarkProfiles);
+      apply(nextBenchmarkRuns as { status: "fulfilled"; value: BenchmarkRun[] } | { status: "rejected" }, setBenchmarkRuns);
+      apply(nextDirectAdapters as { status: "fulfilled"; value: DirectRuntimeAdapterInfo[] } | { status: "rejected" }, setDirectAdapters);
       if (sessionsResult.status === "fulfilled") {
         setSessions(Array.isArray(sessionsResult.value) ? sessionsResult.value : []);
       }
@@ -174,6 +191,10 @@ export default function App() {
     const timer = window.setInterval(refresh, 5000);
     return () => window.clearInterval(timer);
   }, [refresh]);
+
+  useEffect(() => {
+    setBenchmarkResult(null);
+  }, [sessionId]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -390,6 +411,7 @@ export default function App() {
 
   async function createSession() {
     const next = await api.createSession(`Studio Session ${sessions.length + 1}`);
+    setBenchmarkResult(null);
     setSessionId(next.id);
     setBranch(next.current_branch || "corelm");
     setReadout(`created session ${next.id}`);
@@ -439,6 +461,27 @@ export default function App() {
     }
   }
 
+  async function runBenchmarkProfile(profileId: string) {
+    setStatus("busy");
+    setReadout(`running benchmark ${profileId}...`);
+    try {
+      const result = await api.runBenchmark({ profile_id: profileId, session_id: sessionId, branch });
+      setBenchmarkResult(result);
+      const passed = Boolean((result.summary?.verdict as Record<string, unknown> | undefined)?.passed);
+      setReadout(`benchmark ${result.run_id ?? result.id ?? profileId} ${passed ? "passed" : String(result.summary?.status ?? "complete")}`);
+      await refresh();
+    } catch (error) {
+      setReadout(error instanceof Error ? error.message : "benchmark run failed");
+      setStatus("online");
+    }
+  }
+
+  async function saveBenchmarkProfile(profile: BenchmarkProfile) {
+    await api.saveBenchmarkProfile(profile);
+    setReadout(`saved benchmark profile ${profile.name}`);
+    await refresh();
+  }
+
   async function deleteConnector(connectorId: string) {
     await api.deleteConnector(connectorId);
     setReadout(`deleted connector ${connectorId}`);
@@ -472,6 +515,9 @@ export default function App() {
           <button className={mode === "flow" ? "active" : ""} aria-pressed={mode === "flow"} onClick={() => setMode("flow")}>
             <Network size={18} /> Flow Studio
           </button>
+          <button className={mode === "benchmark" ? "active" : ""} aria-pressed={mode === "benchmark"} onClick={() => setMode("benchmark")}>
+            <Activity size={18} /> Benchmark Studio
+          </button>
         </nav>
         <div className="top-controls">
           <label>
@@ -486,7 +532,13 @@ export default function App() {
           </label>
           <label>
             <Archive size={16} />
-            <select value={sessionId} onChange={(event) => setSessionId(event.target.value)}>
+            <select
+              value={sessionId}
+              onChange={(event) => {
+                setBenchmarkResult(null);
+                setSessionId(event.target.value);
+              }}
+            >
               {sessions.length === 0 && <option value="default">default</option>}
               {sessions.map((session) => (
                 <option key={session.id} value={session.id}>
@@ -640,7 +692,7 @@ export default function App() {
             </aside>
           )}
         </section>
-      ) : (
+      ) : mode === "flow" ? (
         <FlowStudio
           workflow={workflow}
           setWorkflow={setWorkflow}
@@ -653,6 +705,20 @@ export default function App() {
           onClone={cloneCurrentWorkflow}
           onExport={exportWorkflow}
           onImport={() => importRef.current?.click()}
+          onInspectCompression={openCompression}
+        />
+      ) : (
+        <BenchmarkStudio
+          profiles={benchmarkProfiles}
+          runs={benchmarkRuns}
+          adapters={directAdapters}
+          latestRun={benchmarkResult}
+          state={state}
+          latestMetric={latestMetric}
+          sessionId={sessionId}
+          branch={branch}
+          onRun={runBenchmarkProfile}
+          onSave={saveBenchmarkProfile}
           onInspectCompression={openCompression}
         />
       )}
@@ -1263,6 +1329,220 @@ function SettingsPanel({
       </section>
     </div>
   );
+}
+
+function BenchmarkStudio({
+  profiles,
+  runs,
+  adapters,
+  latestRun,
+  state,
+  latestMetric,
+  sessionId,
+  branch,
+  onRun,
+  onSave,
+  onInspectCompression
+}: {
+  profiles: BenchmarkProfile[];
+  runs: BenchmarkRun[];
+  adapters: DirectRuntimeAdapterInfo[];
+  latestRun: BenchmarkRun | null;
+  state: StudioState | null;
+  latestMetric: Record<string, unknown> | undefined;
+  sessionId: string;
+  branch: string;
+  onRun: (profileId: string) => Promise<void>;
+  onSave: (profile: BenchmarkProfile) => Promise<void>;
+  onInspectCompression: (packet: CompressionPreview | null, label: string, compare?: boolean) => void;
+}) {
+  const [selectedProfileId, setSelectedProfileId] = useState(profiles[0]?.id ?? "builtin-runtime-conformance");
+  const selectedProfile = profiles.find((profile) => profile.id === selectedProfileId) ?? profiles[0];
+  const activeRun = latestRun ?? runs[runs.length - 1] ?? null;
+  const activeSummary = activeRun?.summary ?? {};
+  const selectedStrict = Boolean(selectedProfile?.strict || selectedProfile?.mode === "strict_direct");
+  const activeStrict = Boolean(activeRun?.strict || activeRun?.profile?.strict || activeSummary.mode === "strict_direct");
+  const verdict = activeSummary.verdict as Record<string, unknown> | undefined;
+  const verdictPassed = Boolean(verdict?.passed);
+  const firstTrial = activeRun?.trials?.[0];
+  const compressionPacket = maybeCompression(firstTrial?.ingest?.compression);
+
+  function duplicateProfile() {
+    if (!selectedProfile) {
+      return;
+    }
+    const cloned: BenchmarkProfile = {
+      ...selectedProfile,
+      id: `${selectedProfile.id}-copy-${Date.now().toString(36)}`,
+      name: `${selectedProfile.name} Copy`,
+      strict: false,
+      mode: selectedProfile.mode === "strict_direct" ? "seeded_stochastic" : selectedProfile.mode
+    };
+    void onSave(cloned);
+  }
+
+  return (
+    <section className="benchmark-layout" data-testid="benchmark-mode">
+      <section className="benchmark-rail">
+        <div className="benchmark-header">
+          <div>
+            <span className="readout-kicker">benchmark studio</span>
+            <h2>Direct Runtime Profiles</h2>
+          </div>
+          <span className={`strict-label ${selectedStrict ? "strict" : "bridge"}`}>{selectedStrict ? "STRICT PROFILE" : "NON-STRICT"}</span>
+        </div>
+        <label className="stacked-field">
+          Profile
+          <select value={selectedProfile?.id ?? ""} onChange={(event) => setSelectedProfileId(event.target.value)}>
+            {profiles.map((profile) => (
+              <option key={profile.id} value={profile.id}>
+                {profile.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {selectedProfile && (
+          <article className="benchmark-profile-card">
+            <div>
+              <strong>{selectedProfile.name}</strong>
+              <span>{selectedProfile.mode}</span>
+              <span>{selectedProfile.adapter_id}</span>
+            </div>
+            <p>{selectedProfile.description}</p>
+            <div className="inline-actions">
+              <button onClick={() => void onRun(selectedProfile.id)}>
+                <Play size={16} /> Run Profile
+              </button>
+              <button onClick={duplicateProfile}>
+                <Save size={16} /> Clone
+              </button>
+            </div>
+          </article>
+        )}
+        <h2>Adapters</h2>
+        <div className="adapter-list">
+          {adapters.map((adapter) => (
+            <article key={adapter.adapter_id} className="adapter-card">
+              <div>
+                <strong>{adapter.adapter_id}</strong>
+                <span>{adapter.runtime_family}</span>
+              </div>
+              <span className={`strict-label ${adapter.strict_eligible && adapter.availability === "available" ? "strict" : "bridge"}`}>
+                {adapter.support_classification ?? (adapter.strict_eligible ? "DIRECT" : "NON-STRICT")}
+              </span>
+              <p>{adapter.availability}{adapter.last_error ? `: ${adapter.last_error}` : ""}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="benchmark-main">
+        <div className="benchmark-header">
+          <div>
+            <span className="readout-kicker">run result</span>
+            <h2>{String(activeRun?.run_id ?? activeRun?.id ?? "No benchmark run")}</h2>
+          </div>
+          <span className={`strict-label ${verdictPassed ? "strict" : "bridge"}`}>{runVerdictLabel(activeStrict, verdictPassed, activeSummary.status)}</span>
+        </div>
+
+        <div className="benchmark-grid">
+          <MetricPanel
+            title="Determinism Inspector"
+            rows={[
+              ["output repeat", summaryMetric(activeSummary, "exact_output_repeat_rate")],
+              ["token repeat", summaryMetric(activeSummary, "exact_token_sequence_repeat_rate")],
+              ["trace hash", summaryMetric(activeSummary, "token_trace_hash_repeat_rate")],
+              ["replay", summaryMetric(activeSummary, "replay_consistency_score")]
+            ]}
+          />
+          <MetricPanel
+            title="Runtime Telemetry"
+            rows={[
+              ["total", summaryMetric(activeSummary, "total_ms", " ms", 1)],
+              ["ttft", summaryMetric(activeSummary, "ttft_ms", " ms", 1)],
+              ["decode t/s", summaryMetric(activeSummary, "decode_tps", "", 1)],
+              ["peak ram", summaryMetric(activeSummary, "peak_ram_mb", " MB", 1)]
+            ]}
+          />
+          <MetricPanel
+            title="Core LM State"
+            rows={[
+              ["session", sessionId],
+              ["branch", branch],
+              ["ledger", String(state?.stats?.ledger_entries ?? 0)],
+              ["state norm", tryReadNumber(latestMetric?.state_norm)],
+              ["invariants", String(state?.stats?.invariant_violations ?? 0)],
+              ["digest", compactDigest(state?.digest)]
+            ]}
+          />
+          <MetricPanel
+            title="Compression"
+            rows={[
+              ["ratio", summaryMetric(activeSummary, "overall_compression_ratio")],
+              ["duplicates", summaryMetric(activeSummary, "duplicate_items_removed", "", 0)],
+              ["schema fields", summaryMetric(activeSummary, "schema_fields_extracted", "", 0)],
+              ["void tokens", summaryMetric(activeSummary, "void_token_count", "", 0)]
+            ]}
+          />
+        </div>
+
+        <div className="inline-actions">
+          <button onClick={() => onInspectCompression(compressionPacket, `benchmark:${activeRun?.run_id ?? activeRun?.id ?? "latest"}`)}>
+            <Braces size={16} /> Inspect Compression
+          </button>
+          <button onClick={() => onInspectCompression(compressionPacket, `benchmark:${activeRun?.run_id ?? activeRun?.id ?? "latest"}`, true)}>
+            <Layers size={16} /> Compare
+          </button>
+        </div>
+
+        <h2>Recent Runs</h2>
+        <div className="trace-list">
+          {runs.slice(-6).map((run) => {
+            const summary = run.summary ?? {};
+            const passed = Boolean((summary.verdict as Record<string, unknown> | undefined)?.passed);
+            return (
+              <article key={String(run.id ?? run.run_id)} className={`trace-item ${passed ? "ok" : "warning"}`}>
+                <strong>{String(run.run_id ?? run.id)}</strong>
+                <span>{String(summary.profile_name ?? run.profile_id ?? "profile")}</span>
+                <code>{String(summary.status ?? run.status ?? "unknown")}</code>
+                <span>{summaryMetric(summary, "exact_output_repeat_rate")}</span>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function MetricPanel({ title, rows }: { title: string; rows: Array<[string, string]> }) {
+  return (
+    <section className="metric-panel">
+      <h2>{title}</h2>
+      {rows.map(([label, value]) => (
+        <span key={label}>
+          <strong>{label}</strong>
+          {value}
+        </span>
+      ))}
+    </section>
+  );
+}
+
+function summaryMetric(summary: Record<string, unknown>, key: string, suffix = "", digits = 3): string {
+  const value = summary[key];
+  return typeof value === "number" && Number.isFinite(value) ? `${value.toFixed(digits)}${suffix}` : "n/a";
+}
+
+function runVerdictLabel(strict: boolean, passed: boolean, status: unknown): string {
+  if (strict && passed) {
+    return "STRICT PASS";
+  }
+  if (strict) {
+    const normalized = String(status ?? "pending").toUpperCase();
+    return normalized === "BLOCKED" ? "STRICT BLOCKED" : `STRICT ${normalized}`;
+  }
+  return passed ? "PASS" : String(status ?? "PENDING");
 }
 
 function FlowStudio({

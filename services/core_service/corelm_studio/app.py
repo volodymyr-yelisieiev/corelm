@@ -6,18 +6,24 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
+from .benchmarking import BenchmarkEngine, report_as_text
 from .compression import preprocess_payload
 from .connectors import connector_catalog, run_inbound_connector
+from .direct_runtime import direct_runtime_registry
 from .local_runtime import ensure_runtime, runtime_status, stop_owned_runtimes
 from .outbound import route_outbound
 from .schemas import (
+    BenchmarkProfileSaveRequest,
+    BenchmarkRunRequest,
     ChatPromoteRequest,
     CompressionPreviewRequest,
     ConnectorIngestRequest,
     ChatRouteRequest,
     ConnectorRunRequest,
     ConnectorSaveRequest,
+    DirectRuntimeLoadRequest,
     IngestRequest,
     LocalRuntimeEnsureRequest,
     OutboundRouteRequest,
@@ -38,6 +44,8 @@ def safe_error(exc: Exception) -> str:
 def create_app(db_path: str | Path | None = None) -> FastAPI:
     core = StudioCore(db_path=db_path)
     engine = WorkflowEngine(core)
+    benchmark_engine = BenchmarkEngine(core)
+    runtime_registry = direct_runtime_registry()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -193,6 +201,73 @@ def create_app(db_path: str | Path | None = None) -> FastAPI:
             return ensure_runtime(target_provider, request.base_url or str(request.config.get("base_url") or default_base_url), request.config)
         except Exception as exc:  # noqa: BLE001
             raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+
+    @app.get("/api/direct-runtimes/adapters")
+    def direct_runtime_adapters() -> list[dict[str, Any]]:
+        return runtime_registry.adapters()
+
+    @app.get("/api/direct-runtimes/models")
+    def direct_runtime_models(adapter_id: str | None = None) -> list[dict[str, Any]]:
+        return runtime_registry.list_models(adapter_id)
+
+    @app.post("/api/direct-runtimes/sessions/load")
+    def direct_runtime_load(request: DirectRuntimeLoadRequest) -> dict[str, Any]:
+        try:
+            return runtime_registry.load(request.adapter_id, request.model_ref, request.config)
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+
+    @app.post("/api/direct-runtimes/sessions/{session_id}/unload")
+    def direct_runtime_unload(session_id: str) -> dict[str, Any]:
+        try:
+            return runtime_registry.unload(session_id)
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=404, detail=safe_error(exc)) from exc
+
+    @app.get("/api/benchmarks/profiles")
+    def benchmark_profiles() -> list[dict[str, Any]]:
+        return benchmark_engine.list_profiles()
+
+    @app.post("/api/benchmarks/profiles")
+    def save_benchmark_profile(request: BenchmarkProfileSaveRequest) -> dict[str, Any]:
+        try:
+            return benchmark_engine.save_profile(request.profile)
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+
+    @app.post("/api/benchmarks/run")
+    def run_benchmark(request: BenchmarkRunRequest) -> dict[str, Any]:
+        try:
+            if request.profile:
+                return benchmark_engine.run_profile(request.profile, request.session_id, request.branch)
+            if request.profile_id:
+                return benchmark_engine.run_profile_id(request.profile_id, request.session_id, request.branch)
+            raise ValueError("profile_id or profile is required")
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+
+    @app.get("/api/benchmarks/runs")
+    def benchmark_runs(session_id: str = "default", limit: int = Query(default=100, ge=1, le=500)) -> list[dict[str, Any]]:
+        return core.db.list_benchmark_runs(session_id, limit)
+
+    @app.get("/api/benchmarks/runs/{run_id}")
+    def benchmark_run(run_id: str) -> dict[str, Any]:
+        run = core.db.get_benchmark_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404, detail="benchmark run not found")
+        return run
+
+    @app.get("/api/benchmarks/runs/{run_id}/report")
+    def benchmark_run_report(run_id: str, format: str = "json") -> PlainTextResponse:
+        run = core.db.get_benchmark_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404, detail="benchmark run not found")
+        try:
+            text = report_as_text(run.get("report") or {}, format)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=safe_error(exc)) from exc
+        media_type = "application/json" if format == "json" else ("text/csv" if format == "csv" else "text/markdown")
+        return PlainTextResponse(text, media_type=media_type)
 
     @app.get("/api/chat")
     def chat(session_id: str = "default", limit: int = Query(default=100, ge=1, le=500)) -> list[dict[str, Any]]:

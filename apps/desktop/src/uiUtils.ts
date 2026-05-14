@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from "react";
 import type { CompressionPreview, QualityEvaluation } from "./types";
 
-export type Mode = "console" | "flow";
+export type Mode = "console" | "flow" | "benchmark";
 export type DrawerTab = "history" | "compression" | "connectors" | "settings";
 export type CompressionSelection = { label: string; packet: CompressionPreview | null };
 

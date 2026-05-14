@@ -1,10 +1,13 @@
-.PHONY: test bench demo checksums full clean release-check editable-check wheel-check studio-service studio-desktop studio-build studio-test
+.PHONY: test bench direct-bench demo checksums full clean release-check editable-check wheel-check studio-service studio-desktop studio-build studio-test
 
 test:
 	PYTHONPATH=. python -m pytest -q
 
 bench:
 	PYTHONPATH=. python -m benches.runner --out reports/benchmark_latest.json --readiness-out reports/publication_readiness.json
+
+direct-bench:
+	PYTHONPATH=. python -m services.core_service.corelm_studio.benchmark_cli run --profile-id builtin-runtime-conformance
 
 demo:
 	PYTHONPATH=. python -m corelm.cli demo --session examples/demo_session.json

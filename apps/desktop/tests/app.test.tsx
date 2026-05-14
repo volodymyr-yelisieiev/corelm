@@ -97,6 +97,124 @@ beforeEach(() => {
       if (url.includes("/api/local-runtimes")) {
         return Response.json({ provider: "ollama", base_url: "http://127.0.0.1:11434", healthy: false, last_error: null });
       }
+      if (url.includes("/api/direct-runtimes/adapters")) {
+        return Response.json([
+          {
+            adapter_id: "transformers_direct",
+            runtime_family: "transformers",
+            strict_eligible: true,
+            direct_execution: true,
+            supports_token_ids: true,
+            supports_token_text: true,
+            supports_per_token_timestamps: false,
+            supports_logits: false,
+            supports_top_k: true,
+            supports_seed: true,
+            availability: "blocked",
+            support_classification: "BLOCKED BY LICENSE / CLOSED RUNTIME / MANUAL STEP",
+            last_error: "transformers and torch are required"
+          },
+          {
+            adapter_id: "deterministic_direct_smoke",
+            runtime_family: "deterministic_inprocess",
+            strict_eligible: false,
+            direct_execution: true,
+            supports_token_ids: true,
+            supports_token_text: true,
+            supports_per_token_timestamps: true,
+            supports_logits: false,
+            supports_top_k: false,
+            supports_seed: true,
+            availability: "available",
+            support_classification: "DIRECT / PARTIAL METRICS"
+          }
+        ]);
+      }
+      if (url.includes("/api/benchmarks/profiles")) {
+        return Response.json([
+          {
+            id: "builtin-runtime-conformance",
+            name: "Runtime Conformance",
+            description: "Smoke direct benchmark",
+            mode: "seeded_stochastic",
+            strict: false,
+            adapter_id: "deterministic_direct_smoke",
+            model_ref: "deterministic://corelm-smoke",
+            repetitions: 1,
+            cases: [{ id: "case-1", prompt: "benchmark.fact = ok" }],
+            generation_config: { seed: 0, temperature: 0 },
+            thresholds: {}
+          }
+        ]);
+      }
+      if (url.includes("/api/benchmarks/run") && !url.includes("/api/benchmarks/runs")) {
+        return Response.json({
+          run_id: "bench-1",
+          profile: { id: "builtin-runtime-conformance", name: "Runtime Conformance" },
+          summary: {
+            status: "ok",
+            strict_result: false,
+            profile_name: "Runtime Conformance",
+            exact_output_repeat_rate: 1,
+            exact_token_sequence_repeat_rate: 1,
+            token_trace_hash_repeat_rate: 1,
+            replay_consistency_score: 1,
+            total_ms: 12,
+            decode_tps: 40,
+            overall_compression_ratio: 0.7,
+            duplicate_items_removed: 1,
+            schema_fields_extracted: 1,
+            void_token_count: 0,
+            verdict: { passed: true }
+          },
+          trials: [
+            {
+              id: "trial-1",
+              run_id: "bench-1",
+              case_id: "case-1",
+              repetition_index: 0,
+              status: "ok",
+              input: {},
+              adapter_result: { token_trace_hash: "tracehash", output_hash: "outhash" },
+              ingest: {
+                compression: {
+                  raw_text: "benchmark.fact = ok",
+                  canonical_text: "sha256:bench\npreview:benchmark.fact = ok",
+                  steps: ["sanitize", "hash_compress"],
+                  annotations: [],
+                  digest: "benchdigest",
+                  compression_ratio: 0.7,
+                  contradiction_candidates: []
+                },
+                ledger_entry_id: "l1"
+              },
+              metrics: {},
+              warnings: []
+            }
+          ],
+          report_paths: { json: "reports/direct_benchmarks/bench-1.json" }
+        });
+      }
+      if (url.includes("/api/benchmarks/runs")) {
+        return Response.json([
+          {
+            id: "bench-0",
+            profile_id: "builtin-runtime-conformance",
+            status: "ok",
+            mode: "seeded_stochastic",
+            strict: false,
+            adapter_id: "deterministic_direct_smoke",
+            summary: {
+              status: "ok",
+              strict_result: false,
+              profile_name: "Runtime Conformance",
+              exact_output_repeat_rate: 1,
+              verdict: { passed: true }
+            },
+            trials: []
+          }
+        ]);
+      }
       if (url.includes("/api/compression/preview")) {
         return Response.json({
           raw_text: " project.name = Core LM Studio \n project.name = Core LM Studio ",
@@ -215,6 +333,28 @@ describe("Core LM Studio desktop shell", () => {
     expect(screen.getByText("22.2")).toBeInTheDocument();
     expect(screen.getByText("90%")).toBeInTheDocument();
     expect(screen.getByText("available")).toBeInTheDocument();
+  });
+
+  it("renders Benchmark Studio and runs a direct smoke profile", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByTestId("console-mode")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: /Benchmark Studio/i }));
+    expect(screen.getByTestId("benchmark-mode")).toBeInTheDocument();
+    expect(screen.getByText("Determinism Inspector")).toBeInTheDocument();
+    expect(screen.getByText("Runtime Telemetry")).toBeInTheDocument();
+    expect(screen.getByText("Core LM State")).toBeInTheDocument();
+    expect(screen.getAllByText("deterministic_direct_smoke").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/NON-STRICT|DIRECT \/ PARTIAL METRICS/).length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("button", { name: /Run Profile/i }));
+
+    await waitFor(() => {
+      const calls = vi.mocked(fetch).mock.calls;
+      expect(calls.some(([input]) => String(input).includes("/api/benchmarks/run"))).toBe(true);
+    });
+    expect(await screen.findByText("PASS")).toBeInTheDocument();
+    expect(screen.getAllByText("1.000").length).toBeGreaterThan(0);
   });
 
   it("runs the LM Studio preset with local OpenAI-compatible config", async () => {

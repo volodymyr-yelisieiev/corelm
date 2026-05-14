@@ -1052,6 +1052,125 @@ select {
   border-color: rgba(255, 159, 50, 0.55);
 }
 
+.benchmark-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 18px;
+  padding: 20px 24px 24px;
+}
+
+.benchmark-rail,
+.benchmark-main {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(17, 22, 29, 0.82);
+}
+
+.benchmark-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.benchmark-header h2,
+.metric-panel h2 {
+  font-size: 17px;
+  letter-spacing: 0;
+}
+
+.benchmark-profile-card,
+.adapter-card,
+.metric-panel {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #26313c;
+  border-radius: 8px;
+  background: #0f141a;
+}
+
+.benchmark-profile-card p,
+.adapter-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.benchmark-profile-card div,
+.adapter-card div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.benchmark-profile-card span,
+.adapter-card span,
+.metric-panel span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.adapter-list {
+  display: grid;
+  gap: 10px;
+}
+
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.metric-panel span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 24px;
+}
+
+.metric-panel strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.strict-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 10px;
+  color: var(--muted);
+  background: var(--panel);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.strict-label.strict {
+  color: #0b1f1c;
+  border-color: rgba(45, 212, 191, 0.65);
+  background: var(--teal);
+}
+
+.strict-label.bridge {
+  color: #201407;
+  border-color: rgba(255, 159, 50, 0.65);
+  background: var(--orange);
+}
+
 .palette {
   position: fixed;
   z-index: 20;
@@ -1085,7 +1204,8 @@ select {
 
 @media (max-width: 1220px) {
   .console-layout,
-  .flow-workspace {
+  .flow-workspace,
+  .benchmark-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1098,7 +1218,8 @@ select {
   }
 
   .metrics-strip,
-  .sampling-grid {
+  .sampling-grid,
+  .benchmark-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

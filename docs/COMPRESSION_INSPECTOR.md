@@ -1,8 +1,8 @@
 # Compression Inspector
 
 The desktop Compression Inspector opens from Console mode, History, ledger
-items, chat messages, and Flow Studio run details when compression metadata is
-available.
+items, chat messages, Flow Studio run details, and Benchmark Studio trial
+metadata when compression metadata is available.
 
 It displays:
 

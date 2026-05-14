@@ -149,6 +149,7 @@ class StudioCore:
             "invariant_violation_rate": violations / ledger_count,
             "determinism_score": 1.0 if replay["ok"] else 0.0,
             "replay_consistency_score": 1.0 if replay["ok"] else 0.0,
+            "provenance_coverage": float(stats.get("provenance_coverage", 0.0)),
             "quality_score": quality_score,
             "quality_summary_score": quality_score,
             "quality_eval_version": quality_eval.get("version") if quality_eval else None,
