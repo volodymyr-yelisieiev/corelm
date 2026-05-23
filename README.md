@@ -1,5 +1,10 @@
 # Core LM Studio
 
+[![CI](https://github.com/volodymyr-yelisieiev/corelm/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/volodymyr-yelisieiev/corelm/actions/workflows/ci.yml)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
+![TypeScript 5.x](https://img.shields.io/badge/typescript-5.x-3178C6)
+![License](https://img.shields.io/badge/license-Proprietary-lightgrey)
+
 Core LM Studio is a local-first Windows desktop application built on top of the
 Core LM full-spectrum research kit. It combines:
 
